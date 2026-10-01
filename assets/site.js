@@ -283,12 +283,14 @@
         var r = await fetch('photos/photos.json', { cache: 'no-cache' });
         if (r.ok) {
           var list = await r.json();
-          return list.map(function (p, i) {
+          if (Array.isArray(list) && list.length) return list.map(function (p, i) {
             return typeof p === 'string' ? { src: p, alt: 'Photograph by James Aketch, ' + (i + 1) } : { src: p.src, alt: p.alt || 'Photograph by James Aketch', w: p.w, h: p.h };
           });
         }
       } catch (e) {}
-      var out = [], n = 1;
+      // check photo-1 on its own first, so an empty folder costs one quiet request instead of six
+      if (!(await exists('photos/photo-1.jpg'))) return [];
+      var out = [{ src: 'photos/photo-1.jpg', alt: 'Photograph by James Aketch, 1' }], n = 2;
       while (n <= 300) {
         var batch = [];
         for (var k = 0; k < 6; k++) batch.push(exists('photos/photo-' + (n + k) + '.jpg'));
@@ -320,11 +322,21 @@
         if (e.key === 'ArrowLeft') show(current - 1);
         if (e.key === 'ArrowRight') show(current + 1);
       });
-      var x0 = null;
-      viewer.addEventListener('touchstart', function (e) { x0 = e.changedTouches[0].clientX; }, { passive: true });
+      var x0 = null, y0 = null;
+      viewer.addEventListener('touchstart', function (e) {
+        if (e.touches.length !== 1 || (window.visualViewport && window.visualViewport.scale > 1.01)) { x0 = y0 = null; return; }
+        x0 = e.touches[0].clientX; y0 = e.touches[0].clientY;
+      }, { passive: true });
+      viewer.addEventListener('touchmove', function (e) {
+        if (e.touches.length !== 1) x0 = y0 = null;
+      }, { passive: true });
+      viewer.addEventListener('touchcancel', function () { x0 = y0 = null; }, { passive: true });
       viewer.addEventListener('touchend', function (e) {
-        if (x0 === null) return; var dx = e.changedTouches[0].clientX - x0; x0 = null;
-        if (Math.abs(dx) > 50) show(current + (dx < 0 ? 1 : -1));
+        if (x0 === null) return;
+        var dx = e.changedTouches[0].clientX - x0, dy = e.changedTouches[0].clientY - y0;
+        x0 = y0 = null;
+        if (e.touches.length || (window.visualViewport && window.visualViewport.scale > 1.01)) return;
+        if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy)) show(current + (dx < 0 ? 1 : -1));
       }, { passive: true });
     }
     function show(i) {

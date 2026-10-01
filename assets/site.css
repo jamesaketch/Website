@@ -84,7 +84,7 @@ a { color: inherit; }
 :root[data-theme="dark"] .tbtn .moon { display: none; }
 
 /* hero */
-.hero { padding: clamp(64px, 12vw, 148px) 0 clamp(56px, 9vw, 108px); border-bottom: 1px solid var(--line); }
+.hero { overflow: hidden; overflow: clip; padding: clamp(64px, 12vw, 148px) 0 clamp(56px, 9vw, 108px); border-bottom: 1px solid var(--line); }
 .hero h1 {
   font-family: var(--serif); font-weight: 400; margin: 0;
   font-size: clamp(54px, 11.5vw, 148px); line-height: 0.95; letter-spacing: -0.02em;
@@ -720,10 +720,12 @@ html.darkroom .photo-page .clockline { color: #f4efe6; text-shadow: 0 0 6px rgba
 html[data-motion="reduced"] .af.hunting .exif, html[data-motion="reduced"] .af.hunting .af-file { filter: none !important; }
 
 @media (max-width: 720px) {
-  .film { width: 18px; background-size: 18px 14.8px; }
+  .film { width: 10px; background-size: 10px 14.8px; }
   .film .edge { display: none; }
-  .photo-page .wrap { width: calc(100% - 52px); }
-  .photo-page .gallery { margin-inline: -8px; }
+  .photo-page .wrap { width: calc(100% - 32px); }
+  .photo-page .gallery { margin-inline: 0; }
+  .photo-page .page-head h1 { font-size: clamp(36px, 9vw, 64px); }
+  .photo-page .clockline { flex-wrap: wrap; }
   .vf-grid { grid-template-columns: 1fr; }
   .viewfinder { aspect-ratio: 4 / 4.4; }
   .vf-ui .osd { font-size: 17px; }
@@ -737,3 +739,7 @@ html[data-motion="reduced"] .af.hunting .exif, html[data-motion="reduced"] .af.h
 .vf-ui .c { filter: drop-shadow(0 0 1.5px rgba(0, 0, 0, .7)); }
 .af .pt { left: auto; right: 64px; margin: -16px 0 0; }
 @media (max-width: 720px) { .af .pt { display: none; } }
+
+/* UCD crest: sized by height (it is tall), with room above and below */
+.cover .uni { width: auto; height: 34px; margin: 4px 0; align-self: flex-start; }
+@media (max-width: 720px) { .cover .uni { height: 40px; margin: 0; } }
