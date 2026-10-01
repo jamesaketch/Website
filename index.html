@@ -183,6 +183,21 @@ a.paper:hover .cover { transform: translateY(-4px); }
 footer { padding: 32px 0 40px; border-top: 1px solid var(--line); color: var(--muted); font-size: 14px; }
 footer .wrap { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
 
+.shot button { display: block; width: 100%; padding: 0; border: 0; background: none; cursor: zoom-in; line-height: 0; }
+.shot button:hover img { filter: brightness(1.07); }
+dialog#viewer { border: 0; padding: 0; background: transparent; width: 100%; max-width: 100vw; height: 100%; max-height: 100vh; color: #eadccb; }
+dialog#viewer::backdrop { background: rgba(18, 10, 7, 0.96); }
+dialog#viewer[open] { display: grid; place-items: center; }
+#viewer img { max-width: min(94vw, 1500px); max-height: 84vh; object-fit: contain; border-radius: 3px; }
+#viewer .vbtn { position: absolute; width: 48px; height: 48px; display: grid; place-items: center; border-radius: 50%; border: 1px solid rgba(234, 220, 203, 0.35); background: rgba(27, 18, 14, 0.6); color: #eadccb; cursor: pointer; padding: 0; }
+#viewer .vbtn:hover { border-color: #c9965c; color: #c9965c; }
+#viewer .vbtn svg { width: 22px; height: 22px; }
+#viewer .vclose { top: calc(env(safe-area-inset-top, 0px) + 14px); right: 14px; }
+#viewer .vprev { left: 14px; top: 50%; transform: translateY(-50%); }
+#viewer .vnext { right: 14px; top: 50%; transform: translateY(-50%); }
+#viewer .vcount { position: absolute; bottom: calc(env(safe-area-inset-bottom, 0px) + 14px); left: 0; right: 0; text-align: center; margin: 0; font-size: 14px; color: #b39d88; }
+@media (max-width: 720px) { #viewer .vprev, #viewer .vnext { top: auto; bottom: calc(env(safe-area-inset-bottom, 0px) + 44px); transform: none; } #viewer img { max-height: 74vh; } }
+
 /* one orchestrated moment: the name settles in */
 @media (prefers-reduced-motion: no-preference) {
   .hero h1 span { animation: settle 1s cubic-bezier(.2,.7,.2,1) both; }
@@ -242,12 +257,12 @@ footer .wrap { display: flex; justify-content: space-between; gap: 12px; flex-wr
         <p>A selection from my Instagram.</p>
       </div>
       <div class="gallery">
-        <figure class="shot"><div class="ph" style="aspect-ratio:4/5"><span>Photo 1</span><img src="photos/photo-1.jpg" alt="Photograph by James Aketch" loading="lazy" onerror="this.remove()"></div></figure>
-        <figure class="shot"><div class="ph" style="aspect-ratio:1/1"><span>Photo 2</span><img src="photos/photo-2.jpg" alt="Photograph by James Aketch" loading="lazy" onerror="this.remove()"></div></figure>
-        <figure class="shot"><div class="ph" style="aspect-ratio:3/4"><span>Photo 3</span><img src="photos/photo-3.jpg" alt="Photograph by James Aketch" loading="lazy" onerror="this.remove()"></div></figure>
-        <figure class="shot"><div class="ph" style="aspect-ratio:4/3"><span>Photo 4</span><img src="photos/photo-4.jpg" alt="Photograph by James Aketch" loading="lazy" onerror="this.remove()"></div></figure>
-        <figure class="shot"><div class="ph" style="aspect-ratio:4/5"><span>Photo 5</span><img src="photos/photo-5.jpg" alt="Photograph by James Aketch" loading="lazy" onerror="this.remove()"></div></figure>
-        <figure class="shot"><div class="ph" style="aspect-ratio:1/1"><span>Photo 6</span><img src="photos/photo-6.jpg" alt="Photograph by James Aketch" loading="lazy" onerror="this.remove()"></div></figure>
+        <figure class="shot"><div class="ph" style="aspect-ratio:4/5"><span>Photo 1</span></div></figure>
+        <figure class="shot"><div class="ph" style="aspect-ratio:1/1"><span>Photo 2</span></div></figure>
+        <figure class="shot"><div class="ph" style="aspect-ratio:3/4"><span>Photo 3</span></div></figure>
+        <figure class="shot"><div class="ph" style="aspect-ratio:4/3"><span>Photo 4</span></div></figure>
+        <figure class="shot"><div class="ph" style="aspect-ratio:4/5"><span>Photo 5</span></div></figure>
+        <figure class="shot"><div class="ph" style="aspect-ratio:1/1"><span>Photo 6</span></div></figure>
       </div>
       <p class="more"><a class="btn ghost" href="https://www.instagram.com/jaketchphoto" rel="noopener">See more on Instagram</a></p>
     </div>
@@ -375,5 +390,114 @@ footer .wrap { display: flex; justify-content: space-between; gap: 12px; flex-wr
   </div>
 </footer>
 
+<dialog id="viewer" aria-label="Photo viewer">
+  <button class="vbtn vclose" type="button" aria-label="Close"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 5l14 14M19 5L5 19"/></svg></button>
+  <button class="vbtn vprev" type="button" aria-label="Previous photo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg></button>
+  <img alt="">
+  <button class="vbtn vnext" type="button" aria-label="Next photo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg></button>
+  <p class="vcount" aria-live="polite"></p>
+</dialog>
+
+<script>
+(function () {
+  // PHOTOS: leave empty and the site loads photos/photo-1.jpg, photo-2.jpg, photo-3.jpg ... in order
+  // (it stops at the first missing number, so don't skip any).
+  // Or list your own files and captions, for example:
+  // var PHOTOS = ["photos/dublin.jpg", { src: "photos/harbour.jpg", alt: "Howth harbour at dusk" }];
+  var PHOTOS = [];
+
+  var gallery = document.querySelector('.gallery');
+  var viewer = document.getElementById('viewer');
+  var vimg = viewer.querySelector('img');
+  var vcount = viewer.querySelector('.vcount');
+  var items = [];
+  var started = false;
+  var current = 0;
+
+  function probe(src, alt) {
+    return new Promise(function (resolve) {
+      var im = new Image();
+      im.onload = function () { resolve({ ok: true, src: src, alt: alt, w: im.naturalWidth, h: im.naturalHeight }); };
+      im.onerror = function () { resolve({ ok: false }); };
+      im.src = src;
+    });
+  }
+
+  function add(it) {
+    if (!started) { gallery.innerHTML = ''; started = true; }
+    var idx = items.push(it) - 1;
+    var fig = document.createElement('figure');
+    fig.className = 'shot';
+    var btn = document.createElement('button');
+    btn.type = 'button';
+    btn.setAttribute('aria-label', 'Open photo ' + (idx + 1) + ' of the gallery');
+    var img = document.createElement('img');
+    img.src = it.src; img.alt = it.alt; img.width = it.w; img.height = it.h;
+    img.loading = 'lazy'; img.decoding = 'async';
+    btn.appendChild(img);
+    btn.addEventListener('click', function () { openAt(idx); });
+    fig.appendChild(btn);
+    gallery.appendChild(fig);
+  }
+
+  async function run() {
+    if (PHOTOS.length) {
+      for (var i = 0; i < PHOTOS.length; i++) {
+        var p = PHOTOS[i];
+        var src = typeof p === 'string' ? p : p.src;
+        var alt = (typeof p === 'string' ? '' : p.alt) || 'Photograph by James Aketch';
+        var r = await probe(src, alt);
+        if (r.ok) add(r);
+      }
+      return;
+    }
+    var n = 1, done = false;
+    while (!done && n <= 200) {
+      var batch = [];
+      for (var k = 0; k < 4; k++) batch.push(probe('photos/photo-' + (n + k) + '.jpg', 'Photograph by James Aketch, ' + (n + k)));
+      var res = await Promise.all(batch);
+      for (var j = 0; j < res.length; j++) {
+        if (!res[j].ok) { done = true; break; }
+        add(res[j]);
+      }
+      n += 4;
+    }
+  }
+
+  function show(i) {
+    if (!items.length) return;
+    current = (i + items.length) % items.length;
+    vimg.src = items[current].src;
+    vimg.alt = items[current].alt;
+    vcount.textContent = (current + 1) + ' of ' + items.length;
+    var nxt = new Image(); nxt.src = items[(current + 1) % items.length].src;
+  }
+  function openAt(i) {
+    show(i);
+    if (typeof viewer.showModal === 'function') viewer.showModal(); else viewer.setAttribute('open', '');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeViewer() { if (viewer.open) viewer.close(); }
+
+  viewer.querySelector('.vclose').addEventListener('click', closeViewer);
+  viewer.querySelector('.vprev').addEventListener('click', function () { show(current - 1); });
+  viewer.querySelector('.vnext').addEventListener('click', function () { show(current + 1); });
+  viewer.addEventListener('close', function () { document.body.style.overflow = ''; });
+  viewer.addEventListener('click', function (e) { if (e.target === viewer) closeViewer(); });
+  viewer.addEventListener('keydown', function (e) {
+    if (e.key === 'ArrowLeft') show(current - 1);
+    if (e.key === 'ArrowRight') show(current + 1);
+  });
+  var x0 = null;
+  viewer.addEventListener('touchstart', function (e) { x0 = e.changedTouches[0].clientX; }, { passive: true });
+  viewer.addEventListener('touchend', function (e) {
+    if (x0 === null) return;
+    var dx = e.changedTouches[0].clientX - x0; x0 = null;
+    if (Math.abs(dx) > 50) show(current + (dx < 0 ? 1 : -1));
+  }, { passive: true });
+
+  run();
+})();
+</script>
 </body>
 </html>
