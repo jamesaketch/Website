@@ -218,6 +218,10 @@ body::before { content: ""; position: fixed; inset: 0; z-index: -1; pointer-even
 /* research covers */
 .cover .kind { display: block; color: var(--muted); font-size: 13px; margin-bottom: 10px; }
 .cover .motif { width: 100%; height: auto; color: var(--accent); }
+.cover .crest { width: 72px; height: auto; color: var(--accent); }
+.cover .crest path { fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linejoin: round; stroke-linecap: round; }
+.cover .crest .inner { opacity: .45; stroke-width: 1; }
+.cover .crest .step { stroke-dasharray: 3 3; opacity: .8; }
 .cover .motif path { fill: none; stroke: currentColor; stroke-width: 2; }
 .cover .motif .ghost { stroke-dasharray: 4 5; opacity: .6; }
 .paper .status { color: var(--accent); font-weight: 600; font-size: 14px; margin-top: 8px; }
@@ -333,7 +337,7 @@ a.paper:not([href]) { cursor: default; }
         <a class="paper" data-file="papers/thesis.pdf">
           <div class="cover">
             <div><span class="kind">Undergraduate thesis</span><b>A Bayesian Markov-Switching VAR for Irish Housing Markets</b></div>
-            <svg class="motif" viewBox="0 0 200 50" aria-hidden="true"><path d="M0 40 H38 V12 H96 V36 H128 V8 H200"/></svg>
+            <svg class="crest" viewBox="0 0 100 120" aria-hidden="true"><path d="M8 8 H92 V52 C92 84 72 104 50 114 C28 104 8 84 8 52 Z"/><path class="inner" d="M16 16 H84 V52 C84 78 68 96 50 105 C32 96 16 78 16 52 Z"/><path class="step" d="M24 44 H42 V30 H60 V40 H76"/><path d="M27 78 V65 L32 59 L37 65 V78"/><path d="M39 78 V65 L44 59 L49 65 V78"/><path d="M51 78 V53 L56 47 L61 53 V78"/><path d="M63 78 V53 L68 47 L73 53 V78"/><path d="M22 78 H78"/></svg>
             <small>UCD School of Economics</small>
           </div>
           <div><h3>Irish housing regimes</h3><p>Does the Irish housing market move between distinct regimes, and what drives the switches between them?</p><p class="status">PDF coming soon</p></div>
