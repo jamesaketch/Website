@@ -154,6 +154,8 @@ a.paper:hover .cover { transform: translateY(-4px); }
 .thumb { aspect-ratio: 4 / 3; border-radius: 4px; background: linear-gradient(135deg, var(--surface-2), var(--line)); }
 .thumb.mark { display: grid; place-items: center; font-family: var(--serif); font-size: 30px; color: var(--accent); }
 .certs a { color: var(--accent); }
+.certs.edu li { grid-template-columns: 1fr auto; }
+.sub { font-family: var(--serif); font-weight: 400; font-size: clamp(28px, 4vw, 38px); margin: 52px 0 18px; }
 .note { margin: 18px 0 0; color: var(--muted); font-size: 15px; }
 .certs strong { display: block; font-weight: 600; }
 .certs span { color: var(--muted); font-size: 15px; }
@@ -212,7 +214,7 @@ footer .wrap { display: flex; justify-content: space-between; gap: 12px; flex-wr
       <a href="#photography">Photography</a>
       <a href="#about">About</a>
       <a href="#research">Research</a>
-      <a href="#certificates">Certificates</a>
+      <a href="#education">Education</a>
       <a href="#amc">AmC</a>
       <a href="#contact">Contact</a>
     </nav>
@@ -257,7 +259,7 @@ footer .wrap { display: flex; justify-content: space-between; gap: 12px; flex-wr
       <div class="prose">
         <p>I'm a final-year economics and mathematics student in Dublin, interested in how markets shift between regimes.</p>
         <p>My thesis uses a Bayesian Markov-switching model to study the Irish housing market, and I co-author a paper on EU student admissions to UK universities after Brexit.</p>
-        <p>Outside of research I shoot photographs and work on Angular Momentum Capital, a systematic quantitative investment project.</p>
+        <p>Outside of research I shoot photographs and work on Angular Momentum Capital, a systematic quantitative investment project. This year I'm also on the media and PR team at UCD's African Society.</p>
       </div>
     </div>
   </section>
@@ -288,15 +290,22 @@ footer .wrap { display: flex; justify-content: space-between; gap: 12px; flex-wr
     </div>
   </section>
 
-  <section id="certificates">
+  <section id="education">
     <div class="wrap">
       <div class="head">
-        <h2>Certificates</h2>
-        <p>Courses and qualifications.</p>
+        <h2>Education</h2>
+        <p>Degree, school and certificates.</p>
       </div>
+      <ul class="certs edu">
+        <li><div><strong>BSc Economics with Mathematics with Applications</strong><span>University College Dublin. Structured Elective. UCD Entrance Scholar, 2023.</span></div><time>2023 to 2027</time></li>
+        <li><div><strong>Leaving Certificate, Higher Level</strong><span>St Michael's College, Dublin. Sole candidate nationally to sit Higher Level Mathematics with a visual impairment. Fáinne Óir for Irish.</span></div><time>2023</time></li>
+      </ul>
+      <h3 class="sub">Certificates</h3>
       <ul class="certs">
         <li><div class="thumb mark">B</div><div><strong>Bloomberg Market Concepts</strong><span>Bloomberg for Education. <a href="https://portal.bloombergforeducation.com/certificates/Lmajcob5EYsPa2h89Mjwh5GS" rel="noopener">View certificate</a></span></div><time>May 2024</time></li>
         <li><div class="thumb mark">B</div><div><strong>Bloomberg Finance Fundamentals</strong><span>Bloomberg for Education. <a href="https://portal.bloombergforeducation.com/certificates/BhQUikttXA32cGBHZ6BerNei" rel="noopener">View certificate</a></span></div><time>Mar 2024</time></li>
+        <li><div class="thumb mark">G</div><div><strong>German, online courses</strong><span>Goethe-Institut. Three certificates.</span></div><time></time></li>
+        <li><div class="thumb mark">L</div><div><strong>Look into Law</strong><span>Law Society of Ireland.</span></div><time>2021</time></li>
       </ul>
       <p class="note">Bloomberg ARN 9785205</p>
     </div>
