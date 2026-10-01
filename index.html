@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>James Rafiki Aketch</title>
+<meta name="description" content="James Rafiki Aketch. Economics and mathematics student in Dublin. Photography, research papers, and Angular Momentum Capital.">
+<meta property="og:title" content="James Rafiki Aketch">
+<meta property="og:description" content="Photography, research, and quantitative investing. Dublin.">
+<meta property="og:type" content="website">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<style>
+:root {
+  /* light: latte and walnut */
+  --bg: #dccab4;
+  --surface: #e7d8c4;
+  --surface-2: #cdb89e;
+  --line: #bda585;
+  --text: #2a1a11;
+  --muted: #5a4435;
+  --accent: #7a4524;
+  --accent-ink: #f3e7d6;
+  --bar: rgba(220, 202, 180, 0.88);
+
+  --serif: "Instrument Serif", "Iowan Old Style", "Palatino Linotype", Georgia, serif;
+  --sans: "Hanken Grotesk", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+
+  box-sizing: border-box;
+  padding-top: env(safe-area-inset-top, 0px);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #1b120e;
+    --surface: #271a14;
+    --surface-2: #35241b;
+    --line: #4a3326;
+    --text: #eadccb;
+    --muted: #b39d88;
+    --accent: #c9965c;
+    --accent-ink: #1b120e;
+    --bar: rgba(27, 18, 14, 0.88);
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #1b120e;
+  --surface: #271a14;
+  --surface-2: #35241b;
+  --line: #4a3326;
+  --text: #eadccb;
+  --muted: #b39d88;
+  --accent: #c9965c;
+  --accent-ink: #1b120e;
+  --bar: rgba(27, 18, 14, 0.88);
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html { height: 100%; scroll-behavior: smooth; scroll-padding-top: calc(env(safe-area-inset-top, 0px) + 76px); }
+body {
+  margin: 0; min-height: 100%;
+  background: var(--bg); color: var(--text);
+  font-family: var(--sans); font-size: 17px; line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+}
+img { max-width: 100%; display: block; }
+a { color: inherit; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 4px; }
+
+.wrap { width: min(1080px, 100% - 40px); margin-inline: auto; }
+
+/* top bar */
+.bar {
+  position: sticky; top: env(safe-area-inset-top, 0px); z-index: 10;
+  background: var(--bar); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--line);
+}
+.bar .wrap { display: flex; align-items: center; justify-content: space-between; gap: 16px; min-height: 60px; }
+.mark { font-family: var(--serif); font-size: 26px; text-decoration: none; letter-spacing: 0.01em; white-space: nowrap; }
+.bar nav { display: flex; gap: 4px; overflow-x: auto; scrollbar-width: none; }
+.bar nav::-webkit-scrollbar { display: none; }
+.bar nav a {
+  text-decoration: none; font-size: 15px; font-weight: 500; color: var(--muted);
+  padding: 6px 11px; border-radius: 999px; white-space: nowrap;
+}
+.bar nav a:hover { color: var(--text); background: var(--surface-2); }
+
+/* hero */
+.hero { padding: clamp(64px, 12vw, 148px) 0 clamp(56px, 9vw, 108px); border-bottom: 1px solid var(--line); }
+.hero h1 {
+  font-family: var(--serif); font-weight: 400; margin: 0;
+  font-size: clamp(54px, 11.5vw, 148px); line-height: 0.95; letter-spacing: -0.02em;
+}
+.hero h1 span { display: block; }
+.hero h1 .soft { font-style: italic; color: var(--accent); }
+.hero p.lede { max-width: 34em; margin: 32px 0 0; font-size: clamp(18px, 2.2vw, 21px); color: var(--muted); }
+.hero .row { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 32px; }
+.btn {
+  display: inline-flex; align-items: center; gap: 8px; text-decoration: none; font-weight: 600; font-size: 15px;
+  padding: 11px 20px; border-radius: 999px; border: 1px solid var(--accent);
+}
+.btn.solid { background: var(--accent); color: var(--accent-ink); }
+.btn.ghost { color: var(--text); border-color: var(--line); }
+.btn:hover { filter: brightness(1.08); }
+
+/* sections */
+section { padding: clamp(56px, 8vw, 104px) 0; border-bottom: 1px solid var(--line); }
+section:last-of-type { border-bottom: 0; }
+.head { display: grid; gap: 10px; margin-bottom: 40px; max-width: 40em; }
+h2 { font-family: var(--serif); font-weight: 400; font-size: clamp(38px, 6vw, 64px); line-height: 1.02; margin: 0; letter-spacing: -0.01em; }
+.head p { margin: 0; color: var(--muted); }
+
+/* photography */
+.gallery { columns: 3 260px; column-gap: 14px; }
+.shot { break-inside: avoid; margin: 0 0 14px; position: relative; border-radius: 6px; overflow: hidden; background: var(--surface-2); }
+.shot img { width: 100%; height: auto; }
+.shot .ph { width: 100%; display: grid; place-items: end start; padding: 14px; color: var(--muted); font-size: 14px;
+  background: linear-gradient(155deg, var(--surface-2), var(--surface) 60%, var(--line)); }
+.shot:nth-child(3n+2) .ph { background: linear-gradient(200deg, var(--line), var(--surface-2) 55%, var(--surface)); }
+.shot:nth-child(3n) .ph { background: linear-gradient(120deg, var(--surface), var(--line)); }
+.more { margin-top: 24px; }
+
+/* about */
+.about { display: grid; grid-template-columns: minmax(0, 300px) minmax(0, 1fr); gap: clamp(28px, 6vw, 72px); align-items: start; }
+.portrait { aspect-ratio: 4 / 5; border-radius: 6px; background: linear-gradient(170deg, var(--surface-2), var(--line)); display: grid; place-items: end start; padding: 14px; color: var(--muted); font-size: 14px; }
+.about .prose { max-width: 36em; }
+.about .prose p { margin: 0 0 1.1em; }
+.about .prose p:first-child { font-family: var(--serif); font-size: clamp(24px, 3.2vw, 32px); line-height: 1.25; color: var(--text); }
+.about .prose p:not(:first-child) { color: var(--muted); }
+
+/* papers */
+.papers { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 28px; }
+.paper { text-decoration: none; display: grid; gap: 14px; align-content: start; }
+.cover {
+  aspect-ratio: 3 / 4; border-radius: 3px 8px 8px 3px; padding: 22px 20px;
+  display: flex; flex-direction: column; justify-content: space-between;
+  background: linear-gradient(135deg, var(--surface-2), var(--surface));
+  border: 1px solid var(--line); border-left: 6px solid var(--accent);
+  box-shadow: 0 14px 28px -18px rgba(20, 8, 2, 0.55);
+  transition: transform .2s ease;
+}
+.paper:hover .cover { transform: translateY(-4px); }
+.cover b { font-family: var(--serif); font-weight: 400; font-size: 25px; line-height: 1.1; }
+.cover small { color: var(--muted); font-size: 13px; }
+.paper h3 { margin: 0; font-size: 17px; font-weight: 600; line-height: 1.3; }
+.paper p { margin: 0; color: var(--muted); font-size: 15px; }
+
+/* certificates */
+.certs { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--line); }
+.certs li { display: grid; grid-template-columns: 76px 1fr auto; gap: 18px; align-items: center; padding: 16px 0; border-bottom: 1px solid var(--line); }
+.thumb { aspect-ratio: 4 / 3; border-radius: 4px; background: linear-gradient(135deg, var(--surface-2), var(--line)); }
+.certs strong { display: block; font-weight: 600; }
+.certs span { color: var(--muted); font-size: 15px; }
+.certs time { color: var(--muted); font-size: 15px; }
+
+/* profiles */
+.profiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 14px; }
+.profile { display: flex; align-items: center; gap: 14px; text-decoration: none; padding: 16px 18px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); }
+.profile:hover { border-color: var(--accent); }
+.profile svg { width: 28px; height: 28px; flex: none; color: var(--accent); }
+.profile b { display: block; font-weight: 600; line-height: 1.2; }
+.profile small { color: var(--muted); font-size: 14px; }
+
+/* amc */
+.amc { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); gap: clamp(28px, 6vw, 72px); align-items: center; padding: clamp(28px, 5vw, 56px); border-radius: 14px; background: var(--surface); border: 1px solid var(--line); }
+.amc h2 { font-size: clamp(34px, 5vw, 54px); }
+.amc p { color: var(--muted); max-width: 32em; margin: 16px 0 24px; }
+.orbit { width: 100%; max-width: 280px; justify-self: center; color: var(--accent); }
+
+/* contact */
+.contact { display: grid; gap: 24px; justify-items: start; }
+.contact a.mail { font-family: var(--serif); font-size: clamp(30px, 6vw, 60px); line-height: 1.1; text-decoration: none; border-bottom: 2px solid var(--accent); }
+.contact p { margin: 0; color: var(--muted); max-width: 32em; }
+
+footer { padding: 32px 0 40px; border-top: 1px solid var(--line); color: var(--muted); font-size: 14px; }
+footer .wrap { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+
+/* one orchestrated moment: the name settles in */
+@media (prefers-reduced-motion: no-preference) {
+  .hero h1 span { animation: settle 1s cubic-bezier(.2,.7,.2,1) both; }
+  .hero h1 span:nth-child(2) { animation-delay: .14s; }
+  @keyframes settle { from { opacity: 0; transform: translateY(22px); letter-spacing: 0.03em; } to { opacity: 1; transform: none; } }
+}
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } .cover { transition: none; } }
+
+@media (max-width: 720px) {
+  .bar .wrap { flex-direction: column; align-items: flex-start; gap: 0; padding: 8px 0 6px; }
+  .bar nav { width: 100%; margin-left: -11px; }
+  html { scroll-padding-top: calc(env(safe-area-inset-top, 0px) + 104px); }
+  .about, .amc { grid-template-columns: 1fr; }
+  .portrait { max-width: 240px; }
+  .certs li { grid-template-columns: 60px 1fr; }
+  .certs time { grid-column: 2; }
+}
+</style>
+</head>
+<body>
+
+<header class="bar">
+  <div class="wrap">
+    <a class="mark" href="#top">Aketch</a>
+    <nav aria-label="Main">
+      <a href="#photography">Photography</a>
+      <a href="#about">About</a>
+      <a href="#research">Research</a>
+      <a href="#certificates">Certificates</a>
+      <a href="#amc">AmC</a>
+      <a href="#contact">Contact</a>
+    </nav>
+  </div>
+</header>
+
+<main id="top">
+
+  <div class="hero">
+    <div class="wrap">
+      <h1><span>James Rafiki</span><span class="soft">Aketch</span></h1>
+      <p class="lede">Economics and mathematics student at UCD in Dublin. I model housing markets, take photographs, and am building a systematic investment firm.</p>
+      <div class="row">
+        <a class="btn solid" href="#research">Read my research</a>
+        <a class="btn ghost" href="#contact">Get in touch</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- PHOTOGRAPHY: replace each .ph div with <img src="photos/your-file.jpg" alt="..."> once the site is on aketch.ie -->
+  <section id="photography">
+    <div class="wrap">
+      <div class="head">
+        <h2>Photography</h2>
+        <p>A selection from my Instagram.</p>
+      </div>
+      <div class="gallery">
+        <figure class="shot"><div class="ph" style="aspect-ratio:4/5">Photo 1</div></figure>
+        <figure class="shot"><div class="ph" style="aspect-ratio:1/1">Photo 2</div></figure>
+        <figure class="shot"><div class="ph" style="aspect-ratio:3/4">Photo 3</div></figure>
+        <figure class="shot"><div class="ph" style="aspect-ratio:4/3">Photo 4</div></figure>
+        <figure class="shot"><div class="ph" style="aspect-ratio:4/5">Photo 5</div></figure>
+        <figure class="shot"><div class="ph" style="aspect-ratio:1/1">Photo 6</div></figure>
+      </div>
+      <p class="more"><a class="btn ghost" href="https://www.instagram.com/yourhandle" rel="noopener">See more on Instagram</a></p>
+    </div>
+  </section>
+
+  <section id="about">
+    <div class="wrap about">
+      <div class="portrait" role="img" aria-label="Portrait placeholder">Portrait</div>
+      <div class="prose">
+        <p>I'm a final-year economics and mathematics student in Dublin, interested in how markets shift between regimes.</p>
+        <p>My thesis uses a Bayesian Markov-switching model to study the Irish housing market, and I co-author a paper on EU student admissions to UK universities after Brexit.</p>
+        <p>Outside of research I shoot photographs and work on Angular Momentum Capital, a systematic quantitative investment project.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- RESEARCH: swap .cover for <img src="covers/thesis.jpg"> if you have a real cover page -->
+  <section id="research">
+    <div class="wrap">
+      <div class="head">
+        <h2>Research</h2>
+        <p>Papers and my undergraduate thesis.</p>
+      </div>
+      <div class="papers">
+        <a class="paper" href="#">
+          <div class="cover">
+            <b>A Bayesian Markov-Switching VAR for Irish Housing Markets</b>
+            <small>Undergraduate thesis<br>UCD School of Economics</small>
+          </div>
+          <div><h3>Irish housing regimes</h3><p>Thesis. Download PDF.</p></div>
+        </a>
+        <a class="paper" href="#">
+          <div class="cover">
+            <b>EU Student Admissions to UK Universities after Brexit</b>
+            <small>Co-authored paper</small>
+          </div>
+          <div><h3>Brexit and student admissions</h3><p>Co-authored paper. Download PDF.</p></div>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <section id="certificates">
+    <div class="wrap">
+      <div class="head">
+        <h2>Certificates</h2>
+        <p>Courses and qualifications.</p>
+      </div>
+      <ul class="certs">
+        <li><div class="thumb"></div><div><strong>Certificate title</strong><span>Issuing organisation</span></div><time>2026</time></li>
+        <li><div class="thumb"></div><div><strong>Certificate title</strong><span>Issuing organisation</span></div><time>2025</time></li>
+        <li><div class="thumb"></div><div><strong>Certificate title</strong><span>Issuing organisation</span></div><time>2024</time></li>
+      </ul>
+    </div>
+  </section>
+
+  <section id="profiles">
+    <div class="wrap">
+      <div class="head">
+        <h2>Find me elsewhere</h2>
+      </div>
+      <div class="profiles">
+        <a class="profile" href="https://orcid.org/0000-0000-0000-0000" rel="me noopener">
+          <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="16" cy="16" r="13"/><path d="M11.5 10v12M16 10h3.2a6 6 0 0 1 0 12H16z" stroke-linejoin="round"/></svg>
+          <span><b>ORCID</b><small>Publications record</small></span>
+        </a>
+        <a class="profile" href="https://www.linkedin.com/in/yourprofile" rel="me noopener">
+          <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="4" y="4" width="24" height="24" rx="4"/><path d="M11 14v8M11 10.5v.1M16 22v-8m0 4a4 4 0 0 1 8 0v4" stroke-linecap="round"/></svg>
+          <span><b>LinkedIn</b><small>Work and education</small></span>
+        </a>
+        <a class="profile" href="https://www.instagram.com/yourhandle" rel="me noopener">
+          <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="4" y="4" width="24" height="24" rx="7"/><circle cx="16" cy="16" r="5.5"/><circle cx="22.5" cy="9.5" r="1" fill="currentColor"/></svg>
+          <span><b>Instagram</b><small>Photography</small></span>
+        </a>
+        <a class="profile" href="https://github.com/yourhandle" rel="me noopener">
+          <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 25c-5 1.5-5-2.5-7-3m14 6v-4.2a3.6 3.6 0 0 0-1-2.8c3.4-.4 7-1.7 7-7.6a5.9 5.9 0 0 0-1.6-4.1 5.5 5.5 0 0 0-.1-4.1s-1.3-.4-4.2 1.6a14.500 14.500 0 0 0-7.600 0C8.600 5.700 7.300 6.100 7.300 6.100a5.500 5.500 0 0 0-.1 4.100A5.900 5.900 0 0 0 5.600 14.300c0 5.900 3.600 7.200 7 7.600a3.600 3.600 0 0 0-1 2.800V28" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <span><b>GitHub</b><small>Code</small></span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <section id="amc">
+    <div class="wrap">
+      <div class="amc">
+        <div>
+          <h2>Angular Momentum Capital</h2>
+          <p>A systematic quantitative investment firm I'm building. Rules-based strategies, tested properly, run without guesswork.</p>
+          <a class="btn solid" href="#contact">Ask about AmC</a>
+        </div>
+        <svg class="orbit" viewBox="0 0 240 240" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+          <circle cx="120" cy="120" r="14" fill="currentColor" stroke="none"/>
+          <circle cx="120" cy="120" r="46" opacity=".8"/>
+          <circle cx="120" cy="120" r="80" opacity=".55"/>
+          <circle cx="120" cy="120" r="112" opacity=".3"/>
+          <circle cx="166" cy="120" r="5" fill="currentColor" stroke="none"/>
+          <circle cx="63" cy="177" r="5" fill="currentColor" stroke="none"/>
+          <circle cx="120" cy="8" r="5" fill="currentColor" stroke="none"/>
+        </svg>
+      </div>
+    </div>
+  </section>
+
+  <section id="contact">
+    <div class="wrap contact">
+      <div class="head" style="margin:0"><h2>Contact</h2></div>
+      <a class="mail" href="mailto:hello@aketch.ie">hello@aketch.ie</a>
+      <p>For research collaboration, photography enquiries, or anything about AmC, send me an email and I'll reply as soon as I can.</p>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>James Rafiki Aketch</span>
+    <span>Dublin, Ireland</span>
+  </div>
+</footer>
+
+</body>
+</html>
