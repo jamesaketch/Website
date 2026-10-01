@@ -115,15 +115,17 @@ h2 { font-family: var(--serif); font-weight: 400; font-size: clamp(38px, 6vw, 64
 .gallery { columns: 3 260px; column-gap: 14px; }
 .shot { break-inside: avoid; margin: 0 0 14px; position: relative; border-radius: 6px; overflow: hidden; background: var(--surface-2); }
 .shot img { width: 100%; height: auto; }
-.shot .ph { width: 100%; display: grid; place-items: end start; padding: 14px; color: var(--muted); font-size: 14px;
+.shot .ph { position: relative; width: 100%; display: grid; place-items: end start; padding: 14px; color: var(--muted); font-size: 14px;
   background: linear-gradient(155deg, var(--surface-2), var(--surface) 60%, var(--line)); }
 .shot:nth-child(3n+2) .ph { background: linear-gradient(200deg, var(--line), var(--surface-2) 55%, var(--surface)); }
 .shot:nth-child(3n) .ph { background: linear-gradient(120deg, var(--surface), var(--line)); }
+.shot .ph img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
 .more { margin-top: 24px; }
 
 /* about */
 .about { display: grid; grid-template-columns: minmax(0, 300px) minmax(0, 1fr); gap: clamp(28px, 6vw, 72px); align-items: start; }
-.portrait { aspect-ratio: 4 / 5; border-radius: 6px; background: linear-gradient(170deg, var(--surface-2), var(--line)); display: grid; place-items: end start; padding: 14px; color: var(--muted); font-size: 14px; }
+.portrait { position: relative; overflow: hidden; aspect-ratio: 4 / 5; border-radius: 6px; background: linear-gradient(170deg, var(--surface-2), var(--line)); display: grid; place-items: end start; padding: 14px; color: var(--muted); font-size: 14px; }
+.portrait img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
 .about .prose { max-width: 36em; }
 .about .prose p { margin: 0 0 1.1em; }
 .about .prose p:first-child { font-family: var(--serif); font-size: clamp(24px, 3.2vw, 32px); line-height: 1.25; color: var(--text); }
@@ -140,7 +142,7 @@ h2 { font-family: var(--serif); font-weight: 400; font-size: clamp(38px, 6vw, 64
   box-shadow: 0 14px 28px -18px rgba(20, 8, 2, 0.55);
   transition: transform .2s ease;
 }
-.paper:hover .cover { transform: translateY(-4px); }
+a.paper:hover .cover { transform: translateY(-4px); }
 .cover b { font-family: var(--serif); font-weight: 400; font-size: 25px; line-height: 1.1; }
 .cover small { color: var(--muted); font-size: 13px; }
 .paper h3 { margin: 0; font-size: 17px; font-weight: 600; line-height: 1.3; }
@@ -150,6 +152,9 @@ h2 { font-family: var(--serif); font-weight: 400; font-size: clamp(38px, 6vw, 64
 .certs { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--line); }
 .certs li { display: grid; grid-template-columns: 76px 1fr auto; gap: 18px; align-items: center; padding: 16px 0; border-bottom: 1px solid var(--line); }
 .thumb { aspect-ratio: 4 / 3; border-radius: 4px; background: linear-gradient(135deg, var(--surface-2), var(--line)); }
+.thumb.mark { display: grid; place-items: center; font-family: var(--serif); font-size: 30px; color: var(--accent); }
+.certs a { color: var(--accent); }
+.note { margin: 18px 0 0; color: var(--muted); font-size: 15px; }
 .certs strong { display: block; font-weight: 600; }
 .certs span { color: var(--muted); font-size: 15px; }
 .certs time { color: var(--muted); font-size: 15px; }
@@ -194,6 +199,9 @@ footer .wrap { display: flex; justify-content: space-between; gap: 12px; flex-wr
   .certs time { grid-column: 2; }
 }
 </style>
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"Person","name":"James Rafiki Aketch","url":"https://aketch.ie","sameAs":["https://orcid.org/0009-0002-3472-8705","https://www.linkedin.com/in/jamesaketch/","https://www.instagram.com/jaketchphoto","https://github.com/jamesaketch"]}
+</script>
 </head>
 <body>
 
@@ -215,7 +223,7 @@ footer .wrap { display: flex; justify-content: space-between; gap: 12px; flex-wr
 
   <div class="hero">
     <div class="wrap">
-      <h1><span>James Rafiki</span><span class="soft">Aketch</span></h1>
+      <h1><span>James Rafiki</span> <span class="soft">Aketch</span></h1>
       <p class="lede">Economics and mathematics student at UCD in Dublin. I model housing markets, take photographs, and am building a systematic investment firm.</p>
       <div class="row">
         <a class="btn solid" href="#research">Read my research</a>
@@ -232,20 +240,20 @@ footer .wrap { display: flex; justify-content: space-between; gap: 12px; flex-wr
         <p>A selection from my Instagram.</p>
       </div>
       <div class="gallery">
-        <figure class="shot"><div class="ph" style="aspect-ratio:4/5">Photo 1</div></figure>
-        <figure class="shot"><div class="ph" style="aspect-ratio:1/1">Photo 2</div></figure>
-        <figure class="shot"><div class="ph" style="aspect-ratio:3/4">Photo 3</div></figure>
-        <figure class="shot"><div class="ph" style="aspect-ratio:4/3">Photo 4</div></figure>
-        <figure class="shot"><div class="ph" style="aspect-ratio:4/5">Photo 5</div></figure>
-        <figure class="shot"><div class="ph" style="aspect-ratio:1/1">Photo 6</div></figure>
+        <figure class="shot"><div class="ph" style="aspect-ratio:4/5"><span>Photo 1</span><img src="photos/photo-1.jpg" alt="Photograph by James Aketch" loading="lazy" onerror="this.remove()"></div></figure>
+        <figure class="shot"><div class="ph" style="aspect-ratio:1/1"><span>Photo 2</span><img src="photos/photo-2.jpg" alt="Photograph by James Aketch" loading="lazy" onerror="this.remove()"></div></figure>
+        <figure class="shot"><div class="ph" style="aspect-ratio:3/4"><span>Photo 3</span><img src="photos/photo-3.jpg" alt="Photograph by James Aketch" loading="lazy" onerror="this.remove()"></div></figure>
+        <figure class="shot"><div class="ph" style="aspect-ratio:4/3"><span>Photo 4</span><img src="photos/photo-4.jpg" alt="Photograph by James Aketch" loading="lazy" onerror="this.remove()"></div></figure>
+        <figure class="shot"><div class="ph" style="aspect-ratio:4/5"><span>Photo 5</span><img src="photos/photo-5.jpg" alt="Photograph by James Aketch" loading="lazy" onerror="this.remove()"></div></figure>
+        <figure class="shot"><div class="ph" style="aspect-ratio:1/1"><span>Photo 6</span><img src="photos/photo-6.jpg" alt="Photograph by James Aketch" loading="lazy" onerror="this.remove()"></div></figure>
       </div>
-      <p class="more"><a class="btn ghost" href="https://www.instagram.com/yourhandle" rel="noopener">See more on Instagram</a></p>
+      <p class="more"><a class="btn ghost" href="https://www.instagram.com/jaketchphoto" rel="noopener">See more on Instagram</a></p>
     </div>
   </section>
 
   <section id="about">
     <div class="wrap about">
-      <div class="portrait" role="img" aria-label="Portrait placeholder">Portrait</div>
+      <div class="portrait"><span>Portrait</span><img src="photos/portrait.jpg" alt="James Rafiki Aketch" onerror="this.remove()"></div>
       <div class="prose">
         <p>I'm a final-year economics and mathematics student in Dublin, interested in how markets shift between regimes.</p>
         <p>My thesis uses a Bayesian Markov-switching model to study the Irish housing market, and I co-author a paper on EU student admissions to UK universities after Brexit.</p>
@@ -262,20 +270,20 @@ footer .wrap { display: flex; justify-content: space-between; gap: 12px; flex-wr
         <p>Papers and my undergraduate thesis.</p>
       </div>
       <div class="papers">
-        <a class="paper" href="#">
+        <div class="paper">
           <div class="cover">
             <b>A Bayesian Markov-Switching VAR for Irish Housing Markets</b>
             <small>Undergraduate thesis<br>UCD School of Economics</small>
           </div>
-          <div><h3>Irish housing regimes</h3><p>Thesis. Download PDF.</p></div>
-        </a>
-        <a class="paper" href="#">
+          <div><h3>Irish housing regimes</h3><p>Thesis. PDF coming soon.</p></div>
+        </div>
+        <div class="paper">
           <div class="cover">
             <b>EU Student Admissions to UK Universities after Brexit</b>
             <small>Co-authored paper</small>
           </div>
-          <div><h3>Brexit and student admissions</h3><p>Co-authored paper. Download PDF.</p></div>
-        </a>
+          <div><h3>Brexit and student admissions</h3><p>Co-authored paper. PDF coming soon.</p></div>
+        </div>
       </div>
     </div>
   </section>
@@ -287,10 +295,10 @@ footer .wrap { display: flex; justify-content: space-between; gap: 12px; flex-wr
         <p>Courses and qualifications.</p>
       </div>
       <ul class="certs">
-        <li><div class="thumb"></div><div><strong>Certificate title</strong><span>Issuing organisation</span></div><time>2026</time></li>
-        <li><div class="thumb"></div><div><strong>Certificate title</strong><span>Issuing organisation</span></div><time>2025</time></li>
-        <li><div class="thumb"></div><div><strong>Certificate title</strong><span>Issuing organisation</span></div><time>2024</time></li>
+        <li><div class="thumb mark">B</div><div><strong>Bloomberg Market Concepts</strong><span>Bloomberg for Education. <a href="https://portal.bloombergforeducation.com/certificates/Lmajcob5EYsPa2h89Mjwh5GS" rel="noopener">View certificate</a></span></div><time>May 2024</time></li>
+        <li><div class="thumb mark">B</div><div><strong>Bloomberg Finance Fundamentals</strong><span>Bloomberg for Education. <a href="https://portal.bloombergforeducation.com/certificates/BhQUikttXA32cGBHZ6BerNei" rel="noopener">View certificate</a></span></div><time>Mar 2024</time></li>
       </ul>
+      <p class="note">Bloomberg ARN 9785205</p>
     </div>
   </section>
 
@@ -300,19 +308,19 @@ footer .wrap { display: flex; justify-content: space-between; gap: 12px; flex-wr
         <h2>Find me elsewhere</h2>
       </div>
       <div class="profiles">
-        <a class="profile" href="https://orcid.org/0000-0000-0000-0000" rel="me noopener">
+        <a class="profile" href="https://orcid.org/0009-0002-3472-8705" rel="me noopener">
           <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="16" cy="16" r="13"/><path d="M11.5 10v12M16 10h3.2a6 6 0 0 1 0 12H16z" stroke-linejoin="round"/></svg>
-          <span><b>ORCID</b><small>Publications record</small></span>
+          <span><b>ORCID</b><small>0009-0002-3472-8705</small></span>
         </a>
-        <a class="profile" href="https://www.linkedin.com/in/yourprofile" rel="me noopener">
+        <a class="profile" href="https://www.linkedin.com/in/jamesaketch/" rel="me noopener">
           <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="4" y="4" width="24" height="24" rx="4"/><path d="M11 14v8M11 10.5v.1M16 22v-8m0 4a4 4 0 0 1 8 0v4" stroke-linecap="round"/></svg>
           <span><b>LinkedIn</b><small>Work and education</small></span>
         </a>
-        <a class="profile" href="https://www.instagram.com/yourhandle" rel="me noopener">
+        <a class="profile" href="https://www.instagram.com/jaketchphoto" rel="me noopener">
           <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="4" y="4" width="24" height="24" rx="7"/><circle cx="16" cy="16" r="5.5"/><circle cx="22.5" cy="9.5" r="1" fill="currentColor"/></svg>
-          <span><b>Instagram</b><small>Photography</small></span>
+          <span><b>Instagram</b><small>@jaketchphoto</small></span>
         </a>
-        <a class="profile" href="https://github.com/yourhandle" rel="me noopener">
+        <a class="profile" href="https://github.com/jamesaketch" rel="me noopener">
           <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 25c-5 1.5-5-2.5-7-3m14 6v-4.2a3.6 3.6 0 0 0-1-2.8c3.4-.4 7-1.7 7-7.6a5.9 5.9 0 0 0-1.6-4.1 5.5 5.5 0 0 0-.1-4.1s-1.3-.4-4.2 1.6a14.500 14.500 0 0 0-7.600 0C8.600 5.700 7.300 6.100 7.300 6.100a5.500 5.500 0 0 0-.1 4.100A5.900 5.900 0 0 0 5.600 14.300c0 5.900 3.600 7.200 7 7.600a3.600 3.600 0 0 0-1 2.800V28" stroke-linecap="round" stroke-linejoin="round"/></svg>
           <span><b>GitHub</b><small>Code</small></span>
         </a>
