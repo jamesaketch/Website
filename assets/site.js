@@ -117,8 +117,8 @@
   };
   var ITEMS = [
     { icon: 'mail', label: 'Copy email address', run: function (b) { copy(EMAIL, function () { flash(b, 'Email copied'); }); return true; } },
-    { icon: 'cv', label: 'View CV', run: function () { location.href = 'cv.html'; } },
-    { icon: 'down', label: 'Download CV as PDF', run: function () { location.href = 'cv.html#print'; } },
+    { icon: 'cv', label: 'View CV', run: function () { location.href = '/cv.html'; } },
+    { icon: 'down', label: 'Download CV as PDF', run: function () { location.href = '/cv.html#print'; } },
     { icon: 'search', label: 'Jump anywhere', run: function () { setTimeout(function () { window.__aketch.palette(); }, 0); } },
     null,
     { icon: 'theme', label: 'Switch light or dark', run: toggleTheme },
@@ -147,12 +147,15 @@
       var i = items.indexOf(document.activeElement);
       if (e.key === 'ArrowDown') { e.preventDefault(); items[(i + 1) % items.length].focus(); }
       else if (e.key === 'ArrowUp') { e.preventDefault(); items[(i - 1 + items.length) % items.length].focus(); }
-      else if (e.key === 'Escape' || e.key === 'Tab') { hideMenu(); }
+      else if (e.key === 'Escape') { e.preventDefault(); hideMenu(true); }
+      else if (e.key === 'Tab') { hideMenu(true); }
     });
   }
-  function hideMenu() { if (menu) menu.hidden = true; }
+  var menuPrev = null;
+  function hideMenu(restore) { if (!menu || menu.hidden) return; menu.hidden = true; if (restore && menuPrev && menuPrev.focus) menuPrev.focus({ preventScroll: true }); }
   function showMenu(x, y) {
     if (!menu) buildMenu();
+    menuPrev = document.activeElement;
     menu.querySelectorAll('button span').forEach(function (s, i) {
       var it = ITEMS.filter(Boolean)[i]; s.textContent = it.label;
     });
@@ -172,9 +175,10 @@
     showMenu(e.clientX, e.clientY);
   });
   document.addEventListener('click', function (e) { if (menu && !menu.hidden && !menu.contains(e.target)) hideMenu(); });
-  window.addEventListener('scroll', hideMenu, { passive: true });
-  window.addEventListener('resize', hideMenu);
-  window.addEventListener('blur', hideMenu);
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && menu && !menu.hidden) hideMenu(true); });
+  window.addEventListener('scroll', function () { hideMenu(); }, { passive: true });
+  window.addEventListener('resize', function () { hideMenu(); });
+  window.addEventListener('blur', function () { hideMenu(); });
 
   /* ---------------- files that may or may not exist yet (PDFs) ---------------- */
   document.querySelectorAll('[data-file]').forEach(function (el) {
@@ -270,7 +274,10 @@
   var gallery = document.querySelector('.gallery[data-auto]');
   if (gallery) {
     var items = [], current = 0, viewer, vimg, vcount;
-    function exists(url) { return fetch(url, { method: 'HEAD', cache: 'no-cache' }).then(function (r) { return r.ok; }).catch(function () { return false; }); }
+    var netErr = false;
+    function exists(url) { return fetch(url, { method: 'HEAD', cache: 'no-cache' }).then(function (r) { return r.ok; }).catch(function () { netErr = true; return false; }); }
+    gallery.setAttribute('aria-busy', 'true');
+    for (var sk = 0; sk < 6; sk++) { var f0 = document.createElement('figure'); f0.className = 'shot sk'; f0.setAttribute('aria-hidden', 'true'); gallery.appendChild(f0); }
     async function discover() {
       try {
         var r = await fetch('photos/photos.json', { cache: 'no-cache' });
@@ -308,7 +315,6 @@
       viewer.querySelector('.vclose').addEventListener('click', function () { viewer.close(); });
       viewer.querySelector('.vprev').addEventListener('click', function () { show(current - 1); });
       viewer.querySelector('.vnext').addEventListener('click', function () { show(current + 1); });
-      viewer.addEventListener('close', function () { document.body.style.overflow = ''; });
       viewer.addEventListener('click', function (e) { if (e.target === viewer) viewer.close(); });
       viewer.addEventListener('keydown', function (e) {
         if (e.key === 'ArrowLeft') show(current - 1);
@@ -330,12 +336,18 @@
       if (!viewer) buildViewer();
       show(i);
       if (typeof viewer.showModal === 'function') viewer.showModal(); else viewer.setAttribute('open', '');
-      document.body.style.overflow = 'hidden';
     }
     discover().then(function (list) {
       items = list;
+      gallery.innerHTML = ''; gallery.removeAttribute('aria-busy');
       var empty = document.querySelector('.empty');
+      if (!items.length && netErr) {
+        var err = document.createElement('div'); err.className = 'gallery-error'; err.setAttribute('role', 'status');
+        err.innerHTML = '<b>The photos could not load just now.</b><p>That is usually a dropped connection. Refresh to try again, or see the latest work on Instagram in the meantime.</p><a class="btn ghost" href="https://www.instagram.com/jaketchphoto" rel="noopener">@jaketchphoto on Instagram</a>';
+        gallery.parentNode.insertBefore(err, gallery.nextSibling); return;
+      }
       if (!items.length) { if (empty) empty.hidden = false; return; }
+      if (window.__aketch && window.__aketch.announce) window.__aketch.announce(items.length + ' photographs loaded');
       items.forEach(function (it, idx) {
         var fig = document.createElement('figure'); fig.className = 'shot';
         var btn = document.createElement('button'); btn.type = 'button';
@@ -344,6 +356,7 @@
         img.loading = 'lazy'; img.decoding = 'async'; img.alt = it.alt;
         if (it.w && it.h) { img.width = it.w; img.height = it.h; }
         else { img.style.aspectRatio = '4 / 5'; img.addEventListener('load', function () { img.style.aspectRatio = ''; }); }
+        img.addEventListener('error', function () { var ph = document.createElement('div'); ph.className = 'broken'; ph.textContent = 'This photo did not load. Refresh to try again.'; btn.replaceChild(ph, img); });
         img.src = it.src;
         btn.appendChild(img);
         btn.addEventListener('click', function () { openAt(idx); });
@@ -371,22 +384,22 @@
   function reduced() { return document.documentElement.getAttribute('data-motion') === 'reduced' || window.matchMedia('(prefers-reduced-motion: reduce)').matches; }
 
   /* ---------- command palette ---------- */
-  var CITE = 'Aketch, J. R. (2026). Is housing like Irish weather? Volatility regimes and asymmetric transmission in the Irish housing market [Undergraduate thesis]. University College Dublin.';
+  var CITE = 'Aketch, J. R. (2026). Housing like Irish weather? Volatility regimes and asymmetric transmission in the Irish housing market [Undergraduate thesis, University College Dublin].';
   var ENTRIES = [
-    { t: 'Home', k: 'start top index', go: 'index.html' },
-    { t: 'About', k: 'bio me', go: 'index.html#about' },
-    { t: 'Research', k: 'thesis papers housing brexit', go: 'research.html' },
-    { t: 'Regime simulator', k: 'model play markov switching interactive', go: 'research.html#simulator' },
-    { t: 'Skills', k: 'python code methods tools', go: 'index.html#skills' },
-    { t: 'Beyond the work', k: 'rugby braille languages interests', go: 'index.html#beyond' },
-    { t: 'Education', k: 'ucd degree certificates bloomberg', go: 'index.html#education' },
-    { t: 'Photography', k: 'photos gallery instagram', go: 'photography.html' },
-    { t: 'CV', k: 'resume', go: 'cv.html' },
-    { t: 'Angular Momentum Capital', k: 'amc quant fund', go: 'index.html#amc' },
-    { t: 'Contact', k: 'email reach', go: 'index.html#contact' },
+    { t: 'Home', k: 'start top index', go: '/' },
+    { t: 'About', k: 'bio me', go: '/#about' },
+    { t: 'Research', k: 'thesis papers housing brexit', go: '/research.html' },
+    { t: 'Regime simulator', k: 'model play markov switching interactive', go: '/research.html#simulator' },
+    { t: 'Skills', k: 'python code methods tools', go: '/#skills' },
+    { t: 'Beyond the work', k: 'rugby braille languages interests', go: '/#beyond' },
+    { t: 'Education', k: 'ucd degree certificates bloomberg', go: '/#education' },
+    { t: 'Photography', k: 'photos gallery instagram', go: '/photography.html' },
+    { t: 'CV', k: 'resume', go: '/cv.html' },
+    { t: 'Angular Momentum Capital', k: 'amc quant fund', go: '/#amc' },
+    { t: 'Contact', k: 'email reach', go: '/#contact' },
     { t: 'Copy email address', k: 'mail', act: function () { A.copy && A.copy('hello@aketch.ie'); }, hint: 'Action' },
     { t: 'Copy thesis citation', k: 'cite reference apa', act: function () { A.copy && A.copy(CITE); }, hint: 'Action' },
-    { t: 'Download CV as PDF', k: 'print resume', go: 'cv.html#print', hint: 'Action' },
+    { t: 'Download CV as PDF', k: 'print resume', go: '/cv.html#print', hint: 'Action' },
     { t: 'Switch light or dark', k: 'theme mode', act: function () { A.toggleTheme && A.toggleTheme(); }, hint: 'Action' },
     { t: 'Accessibility options', k: 'contrast text font motion', act: function () { setTimeout(function () { A.openPanel && A.openPanel(); }, 0); }, hint: 'Action' },
     { t: 'Site credits', k: 'about site fonts', act: function () { A.openCredits && A.openCredits(); }, hint: 'Action' }
@@ -528,9 +541,11 @@
       }
       bands.innerHTML = b;
       var dc = 1 / (1 - r.p11), dv = 1 / (1 - r.p22);
-      oc.textContent = r.p11.toFixed(3) + ', calm spells last about ' + Math.round(dc) + ' periods';
-      ov.textContent = r.p22.toFixed(3) + ', volatile spells last about ' + Math.round(dv) + ' periods';
-      summary.textContent = 'In the long run this market spends ' + Math.round(r.pi2 * 100) + '% of its time in the volatile regime. This draw switched regime ' + r.switches + ' times.';
+      oc.textContent = r.p11.toFixed(3) + ', calm spells last about ' + Math.round(dc) + ' quarters';
+      ov.textContent = r.p22.toFixed(3) + ', volatile spells last about ' + Math.round(dv) + ' quarters';
+      var gap = 1 - Math.abs(r.p11 + r.p22 - 1);
+      var feel = gap < 0.25 ? 'very persistent' : gap < 0.5 ? 'fairly persistent' : 'quick to switch';
+      summary.innerHTML = 'Long-run share of time in S<sub>1</sub>: ' + Math.round(r.pi2 * 100) + '%. Spectral gap ' + gap.toFixed(3) + ', so regimes here are ' + feel + '. This history switched regime ' + r.switches + ' times.';
       if (animate && !reduced()) {
         var t0 = null;
         var step = function (ts) { if (!t0) t0 = ts; var k = Math.min(1, (ts - t0) / 1100); clip.setAttribute('width', (W * (1 - Math.pow(1 - k, 3))).toFixed(1)); if (k < 1) requestAnimationFrame(step); };
@@ -542,5 +557,218 @@
     pv.addEventListener('input', function () { draw(false); });
     sim.querySelector('.redraw').addEventListener('click', function () { seed = (seed * 1103515245 + 12345) >>> 0; draws(); draw(true); });
     sim.querySelector('.reset-sim').addEventListener('click', function () { pc.value = 0.97; pv.value = 0.9; draw(false); });
+  }
+})();
+
+/* ===================== hero equations (KaTeX) ===================== */
+(function () {
+  'use strict';
+  var box = document.querySelector('.eqs');
+  if (!box) return;
+  // Swap these for the exact forms in your thesis. Plain LaTeX, rendered by KaTeX.
+  var EQUATIONS = [
+    'y_t = c_{S_t} + \\sum_{p=1}^{P} A_p\\, y_{t-p} + \\Sigma_{S_t}^{1/2}\\, \\varepsilon_t',
+    '\\beta_{ij,\\ell} \\mid \\lambda, \\delta, \\nu \\sim t_{\\nu}\\!\\left(0,\\; \\frac{\\lambda^{2}}{\\ell^{2\\delta}}\\, \\frac{\\sigma_i^{2}}{\\sigma_j^{2}}\\right)',
+    '\\xi_{t\\mid t} = \\frac{\\xi_{t\\mid t-1} \\odot \\eta_t}{\\mathbf{1}^{\\top}\\left(\\xi_{t\\mid t-1} \\odot \\eta_t\\right)}',
+    '\\Pr\\left(S_t = j \\mid S_{t-1} = i\\right) = p_{ij}',
+    '\\lim_{\\nu \\to \\infty} t_{\\nu}\\!\\left(0, s^{2}\\right) = \\mathcal{N}\\!\\left(0, s^{2}\\right)',
+    '\\xi_{t+1\\mid t} = P^{\\top} \\xi_{t\\mid t}'
+  ];
+  function render() {
+    if (box.children.length || !window.katex) return;
+    EQUATIONS.forEach(function (tex, i) {
+      var d = document.createElement('div');
+      d.className = 'eq k' + (i + 1);
+      try { d.innerHTML = window.katex.renderToString(tex, { throwOnError: false, output: 'html' }); } catch (e) { return; }
+      box.appendChild(d);
+    });
+  }
+  if (window.katex) render(); else window.addEventListener('load', render);
+
+  // gentle parallax: the maths drifts a few pixels against the cursor
+  var fine = window.matchMedia('(pointer: fine)').matches;
+  var hero = document.querySelector('.hero');
+  function still() { return document.documentElement.getAttribute('data-motion') === 'reduced' || window.matchMedia('(prefers-reduced-motion: reduce)').matches; }
+  if (hero && fine) {
+    hero.addEventListener('pointermove', function (e) {
+      if (still()) return;
+      var r = hero.getBoundingClientRect();
+      var x = (e.clientX - r.left) / r.width - 0.5, y = (e.clientY - r.top) / r.height - 0.5;
+      box.style.setProperty('--ex', (-x * 14).toFixed(1) + 'px');
+      box.style.setProperty('--ey', (-y * 10).toFixed(1) + 'px');
+    });
+    hero.addEventListener('pointerleave', function () { box.style.setProperty('--ex', '0px'); box.style.setProperty('--ey', '0px'); });
+  }
+})();
+
+
+/* ===================== round 4: announcements, focus, scroll lock, back to top, 404 ===================== */
+(function () {
+  'use strict';
+  var A = window.__aketch || (window.__aketch = {});
+  var root = document.documentElement;
+  function still() { return root.getAttribute('data-motion') === 'reduced' || window.matchMedia('(prefers-reduced-motion: reduce)').matches; }
+
+  /* one polite live region for the whole site */
+  var sr = document.createElement('div');
+  sr.className = 'sr-only'; sr.setAttribute('role', 'status'); sr.setAttribute('aria-live', 'polite');
+  document.body.appendChild(sr);
+  var srTimer;
+  A.announce = function (msg) { clearTimeout(srTimer); sr.textContent = ''; srTimer = setTimeout(function () { sr.textContent = msg; }, 60); };
+
+  document.addEventListener('click', function (e) {
+    var b = e.target.closest && e.target.closest('[data-copy]');
+    if (b) A.announce(/citation|BibTeX/i.test(b.textContent) ? 'Citation copied to clipboard' : 'Copied to clipboard');
+  });
+  var LABELS = { 'data-theme': function (v) { return v === 'dark' ? 'Dark mode on' : 'Light mode on'; },
+    'data-text': function (v) { return v ? 'Larger text on' : 'Larger text off'; },
+    'data-contrast': function (v) { return v ? 'High contrast on' : 'High contrast off'; },
+    'data-font': function (v) { return v ? 'Low-vision font on' : 'Low-vision font off'; },
+    'data-motion': function (v) { return v ? 'Reduced motion on' : 'Reduced motion off'; } };
+  new MutationObserver(function (muts) {
+    muts.forEach(function (m) { var f = LABELS[m.attributeName]; if (f) A.announce(f(root.getAttribute(m.attributeName))); });
+  }).observe(root, { attributes: true, attributeFilter: Object.keys(LABELS) });
+
+  /* every modal dialog: lock background scroll without losing your place, and hand focus back on close */
+  var locks = 0;
+  function lock() {
+    if (locks++ === 0) { root.style.overflow = 'hidden'; }
+  }
+  function unlock() {
+    if (locks > 0 && --locks === 0) { root.style.overflow = ''; }
+  }
+  if (window.HTMLDialogElement && HTMLDialogElement.prototype.showModal) {
+    var orig = HTMLDialogElement.prototype.showModal;
+    HTMLDialogElement.prototype.showModal = function () {
+      var prev = document.activeElement, dlg = this;
+      lock();
+      dlg.addEventListener('close', function done() {
+        dlg.removeEventListener('close', done);
+        unlock();
+        if (prev && prev.focus && document.contains(prev)) prev.focus({ preventScroll: true });
+      });
+      return orig.apply(this, arguments);
+    };
+  }
+
+  /* back to top: appears after the first screen, arrow swings into place */
+  var main = document.getElementById('main');
+  if (main) {
+    var up = document.createElement('button');
+    up.type = 'button'; up.className = 'to-top'; up.setAttribute('aria-label', 'Back to top');
+    up.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 19V5M5.5 11.5L12 5l6.5 6.5"/></svg>';
+    document.body.appendChild(up);
+    var shown = false, tick = false;
+    window.addEventListener('scroll', function () {
+      if (tick) return; tick = true;
+      requestAnimationFrame(function () {
+        var want = scrollY > innerHeight * 1.1;
+        if (want !== shown) { shown = want; up.classList.toggle('show', want); }
+        tick = false;
+      });
+    }, { passive: true });
+    up.addEventListener('click', function () {
+      window.scrollTo({ top: 0, behavior: still() ? 'auto' : 'smooth' });
+      if (!main.hasAttribute('tabindex')) main.setAttribute('tabindex', '-1');
+      main.focus({ preventScroll: true });
+      A.announce('Back at the top of the page');
+    });
+  }
+
+  /* 404: suggest the page you probably meant */
+  if (document.body.getAttribute('data-page') === '404') {
+    var PAGES = [['research', '/research.html', 'Research'], ['photography', '/photography.html', 'Photography'], ['photos', '/photography.html', 'Photography'],
+      ['cv', '/cv.html', 'CV'], ['resume', '/cv.html', 'CV'], ['thesis', '/research.html', 'Research'], ['simulator', '/research.html#simulator', 'the regime simulator'],
+      ['about', '/#about', 'About'], ['contact', '/#contact', 'Contact'], ['skills', '/#skills', 'Skills'], ['amc', '/#amc', 'Angular Momentum Capital']];
+    function lev(a, b) {
+      var d = []; for (var i = 0; i <= a.length; i++) { d[i] = [i]; }
+      for (var j = 1; j <= b.length; j++) d[0][j] = j;
+      for (i = 1; i <= a.length; i++) for (j = 1; j <= b.length; j++) d[i][j] = Math.min(d[i - 1][j] + 1, d[i][j - 1] + 1, d[i - 1][j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1));
+      return d[a.length][b.length];
+    }
+    var slug = decodeURIComponent(location.pathname).toLowerCase().replace(/\.html?$/, '').split('/').filter(Boolean).pop() || '';
+    var best = null, score = 99;
+    PAGES.forEach(function (p) { var sc = lev(slug, p[0]); if (sc < score) { score = sc; best = p; } });
+    var box = document.querySelector('.suggest');
+    if (box && best && slug && score <= Math.max(2, Math.floor(best[0].length / 2))) {
+      var a = box.querySelector('a'); a.href = best[1]; a.textContent = best[2]; box.hidden = false;
+    }
+    var shown404 = document.querySelector('.nf-path');
+    if (shown404) shown404.textContent = location.pathname;
+  }
+})();
+
+/* ===================== photography page: darkroom, camcorder OSD, autofocus card ===================== */
+(function () {
+  'use strict';
+  if (!document.body.classList.contains('photo-page')) return;
+  var root = document.documentElement;
+  var A = window.__aketch || {};
+  function still() { return root.getAttribute('data-motion') === 'reduced' || window.matchMedia('(prefers-reduced-motion: reduce)').matches; }
+
+  /* lights down: a slow fade the first time per visit, a quick one after that */
+  var seen = false;
+  try { seen = sessionStorage.getItem('darkroom') === '1'; sessionStorage.setItem('darkroom', '1'); } catch (e) {}
+  if (seen) root.classList.add('quick');
+  setTimeout(function () { root.classList.add('darkroom'); }, (seen || still()) ? 0 : 450);
+
+  /* on this page the theme button works the lights instead */
+  var tb = document.querySelector('.tbtn.theme');
+  if (tb) tb.setAttribute('aria-label', 'Turn the lights up or down');
+  document.addEventListener('click', function (e) {
+    if (!e.target.closest || !e.target.closest('.tbtn.theme')) return;
+    e.stopPropagation(); e.preventDefault();
+    root.classList.add('quick');
+    var down = root.classList.toggle('darkroom');
+    if (A.announce) A.announce(down ? 'Lights down' : 'Lights up');
+  }, true);
+
+  /* camcorder timecode, PAL 25 frames a second */
+  var tc = document.querySelectorAll('.tc'), t0 = performance.now();
+  function pad(n) { return (n < 10 ? '0' : '') + n; }
+  function runTC() {
+    var f = Math.floor((performance.now() - t0) / 40);
+    var ff = f % 25, s = Math.floor(f / 25), ss = s % 60, mm = Math.floor(s / 60) % 60, hh = Math.floor(s / 3600);
+    var txt = pad(hh) + ':' + pad(mm) + ':' + pad(ss) + ':' + pad(ff);
+    tc.forEach(function (el) { el.textContent = txt; });
+  }
+  if (tc.length) { runTC(); setInterval(runTC, still() ? 1000 : 40); }
+
+  /* Dublin date and time in camcorder, film date-stamp and EXIF formats */
+  var MON = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
+  var footerInner = document.querySelector('.clockline > span');
+  if (footerInner) { var od = document.createElement('span'); od.className = 'osd-date'; footerInner.insertBefore(document.createTextNode(' '), footerInner.firstChild); footerInner.insertBefore(od, footerInner.firstChild); }
+  function stamp() {
+    var p = {};
+    new Intl.DateTimeFormat('en-GB', { timeZone: 'Europe/Dublin', year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', hourCycle: 'h23' })
+      .formatToParts(new Date()).forEach(function (x) { p[x.type] = x.value; });
+    document.querySelectorAll('.osd-date').forEach(function (el) { el.textContent = MON[+p.month - 1] + '.' + p.day + '.' + p.year; });
+    document.querySelectorAll('.film-stamp').forEach(function (el) { el.textContent = "'" + p.year.slice(2) + ' ' + p.month + ' ' + p.day; });
+    document.querySelectorAll('.exif-time').forEach(function (el) { el.textContent = p.year + ':' + p.month + ':' + p.day + ' ' + p.hour + ':' + p.minute + ':' + p.second; });
+  }
+  stamp(); setInterval(stamp, 1000);
+
+  /* autofocus contact card: hunts, then locks */
+  var af = document.querySelector('.af');
+  if (af) {
+    var label = af.querySelector('.af-lock'), busy = false;
+    function lockNow() { af.classList.remove('hunting'); af.classList.add('locked'); if (label) label.textContent = 'FOCUS LOCKED'; busy = false; }
+    function hunt() {
+      if (busy) return;
+      if (still()) { lockNow(); return; }
+      busy = true;
+      af.classList.remove('locked'); af.classList.remove('hunting');
+      void af.offsetWidth;
+      af.classList.add('hunting');
+      if (label) label.textContent = 'FOCUSING';
+      setTimeout(lockNow, 1050);
+    }
+    if ('IntersectionObserver' in window) {
+      var io = new IntersectionObserver(function (en) { if (en[0].isIntersecting) { hunt(); io.disconnect(); } }, { threshold: 0.55 });
+      io.observe(af);
+    } else lockNow();
+    af.addEventListener('pointerenter', hunt);
+    af.addEventListener('focus', hunt);
+    af.addEventListener('click', function (e) { if (!e.target.closest('a')) hunt(); });
   }
 })();

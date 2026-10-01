@@ -9,19 +9,22 @@
 <meta property="og:description" content="Photographs by James Rafiki Aketch.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://aketch.ie/photography.html">
-<meta property="og:image" content="https://aketch.ie/photos/portrait.jpg">
+<meta property="og:image" content="https://aketch.ie/photos/james-camera.jpg">
 <link rel="canonical" href="https://aketch.ie/photography.html">
-<meta name="theme-color" content="#dccab4" media="(prefers-color-scheme: light)">
-<meta name="theme-color" content="#1b120e" media="(prefers-color-scheme: dark)">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%237a4524'/%3E%3Ctext x='32' y='46' text-anchor='middle' font-family='Georgia,serif' font-style='italic' font-size='40' fill='%23f3e7d6'%3EA%3C/text%3E%3C/svg%3E">
+<meta name="theme-color" content="#0b0908">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-photo-32.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon-photo.png">
+<link rel="manifest" href="/site.webmanifest">
 <script>try{var d=document.documentElement,t=localStorage.getItem("theme");if(t)d.setAttribute("data-theme",t);var a=JSON.parse(localStorage.getItem("a11y")||"{}");if(a.text)d.setAttribute("data-text","large");if(a.contrast||(a.contrast===undefined&&matchMedia("(prefers-contrast: more)").matches))d.setAttribute("data-contrast","high");if(a.font)d.setAttribute("data-font","readable");if(a.motion)d.setAttribute("data-motion","reduced");}catch(e){}</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600&family=Instrument+Serif:ital@0;1&family=VT323&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="assets/site.css">
 <script src="assets/site.js" defer></script>
 </head>
-<body>
+<body class="photo-page">
+<div class="film film-l" aria-hidden="true"><span class="edge">AKETCH 400 &#9656; 24A</span></div>
+<div class="film film-r" aria-hidden="true"><span class="edge">AKETCH 400 &#9656; 12 &#9656; 12A</span></div>
 <a class="skip" href="#main">Skip to content</a>
 <header class="bar">
   <div class="wrap">
@@ -40,12 +43,25 @@
   </div>
 </header>
 
-<main id="main">
+<main id="main" tabindex="-1">
   <div class="page-head">
-    <div class="wrap">
-      <h1>Photography</h1>
-      <p>A selection of my photographs. Newer work goes up on Instagram first.</p>
-      <div class="row"><a class="btn ghost" href="https://www.instagram.com/jaketchphoto" rel="noopener">@jaketchphoto on Instagram</a></div>
+    <div class="wrap vf-grid">
+      <div>
+        <p class="osd-rec osd" aria-hidden="true"><span class="rec-dot"></span>REC <span class="tc">00:00:00:00</span></p>
+        <h1>Photography</h1>
+        <p>A selection of my photographs. Newer work goes up on Instagram first.</p>
+        <div class="row"><a class="btn ghost ig" href="https://www.instagram.com/jaketchphoto" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3.5 8h3.2l1.6-2.3h7.4L17.3 8h3.2v11h-17z"/><circle cx="12" cy="13.3" r="3.6"/></svg> @jaketchphoto on Instagram</a></div>
+      </div>
+      <figure class="viewfinder">
+        <img src="photos/james-camera.jpg" alt="James looking through the viewfinder of his Fujifilm camera" width="1248" height="1400">
+        <div class="vf-ui" aria-hidden="true">
+          <span class="c tl"></span><span class="c tr"></span><span class="c bl"></span><span class="c br"></span>
+          <span class="osd o-tl">&#9654; PLAY</span>
+          <span class="osd o-tr">SP<span class="batt"></span></span>
+          <span class="osd o-bl tc">00:00:00:00</span>
+          <span class="osd o-br film-stamp">'26 10 01</span>
+        </div>
+      </figure>
     </div>
   </div>
   <div class="page-body">
@@ -54,10 +70,30 @@
       <div class="gallery" data-auto></div>
       <div class="empty" hidden>
         <p>New photographs are on their way to this page.</p>
-        <a class="btn ghost" href="https://www.instagram.com/jaketchphoto" rel="noopener">See them on Instagram for now</a>
+        <a class="btn ghost ig" href="https://www.instagram.com/jaketchphoto" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3.5 8h3.2l1.6-2.3h7.4L17.3 8h3.2v11h-17z"/><circle cx="12" cy="13.3" r="3.6"/></svg> See them on Instagram for now</a>
       </div>
     </div>
   </div>
+  <section class="af-sec" id="book" aria-labelledby="book-h">
+    <div class="wrap">
+      <h2 id="book-h">Book a shoot</h2>
+      <div class="af" tabindex="0" aria-label="Contact details, shown as photo metadata">
+        <span class="b b1" aria-hidden="true"></span><span class="b b2" aria-hidden="true"></span><span class="b b3" aria-hidden="true"></span><span class="b b4" aria-hidden="true"></span>
+        <span class="pt" aria-hidden="true"></span>
+        <p class="af-file">CONTACT_001.RAF</p>
+        <dl class="exif">
+          <dt>Photographer</dt><dd>James Rafiki Aketch</dd>
+          <dt>Location</dt><dd>Dublin, Ireland</dd>
+          <dt>Available for</dt><dd>Portrait / Event / Editorial</dd>
+          <dt>Email</dt><dd><a href="mailto:hello@aketch.ie">hello@aketch.ie</a></dd>
+          <dt>Instagram</dt><dd><a href="https://www.instagram.com/jaketchphoto" rel="noopener">@jaketchphoto</a></dd>
+          <dt>Camera</dt><dd>Fujifilm</dd>
+          <dt>Date/time</dt><dd class="exif-time">2026:10:01 12:00:00</dd>
+        </dl>
+        <p class="af-status" aria-hidden="true"><span class="af-dot"></span>AF-S <span class="af-lock">STANDBY</span></p>
+      </div>
+    </div>
+  </section>
 </main>
 
 <footer>

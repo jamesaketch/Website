@@ -1,0 +1,11 @@
+{
+  "name": "James Rafiki Aketch",
+  "short_name": "Aketch",
+  "icons": [
+    { "src": "/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png" }
+  ],
+  "theme_color": "#7a4524",
+  "background_color": "#dccab4",
+  "display": "browser"
+}

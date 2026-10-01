@@ -13,7 +13,10 @@
 <link rel="canonical" href="https://aketch.ie/research.html">
 <meta name="theme-color" content="#dccab4" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#1b120e" media="(prefers-color-scheme: dark)">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%237a4524'/%3E%3Ctext x='32' y='46' text-anchor='middle' font-family='Georgia,serif' font-style='italic' font-size='40' fill='%23f3e7d6'%3EA%3C/text%3E%3C/svg%3E">
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="manifest" href="/site.webmanifest">
 <script>try{var d=document.documentElement,t=localStorage.getItem("theme");if(t)d.setAttribute("data-theme",t);var a=JSON.parse(localStorage.getItem("a11y")||"{}");if(a.text)d.setAttribute("data-text","large");if(a.contrast||(a.contrast===undefined&&matchMedia("(prefers-contrast: more)").matches))d.setAttribute("data-contrast","high");if(a.font)d.setAttribute("data-font","readable");if(a.motion)d.setAttribute("data-motion","reduced");}catch(e){}</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -40,7 +43,7 @@
   </div>
 </header>
 
-<main id="main">
+<main id="main" tabindex="-1">
   <div class="page-head">
     <div class="wrap">
       <h1>Research</h1>
@@ -51,44 +54,58 @@
     <div class="wrap">
       <section class="r-block" id="thesis">
         <div class="feature">
-          <a class="cover-link" data-file="papers/thesis.pdf" aria-label="Open the thesis PDF">
+          <a class="cover-link" href="papers/thesis.pdf" target="_blank" rel="noopener" aria-label="Open the thesis PDF">
             <div class="cover">
-              <div><span class="kind">Undergraduate thesis</span><b>Is Housing Like Irish Weather?</b><span class="subt">Volatility regimes and asymmetric transmission in the Irish housing market</span></div>
+              <div><span class="kind">Undergraduate thesis</span><b>Housing Like Irish Weather?</b><span class="subt">Volatility regimes and asymmetric transmission in the Irish housing market</span></div>
               <svg class="crest" viewBox="0 0 100 120" aria-hidden="true"><path d="M8 8 H92 V52 C92 84 72 104 50 114 C28 104 8 84 8 52 Z"/><path class="inner" d="M16 16 H84 V52 C84 78 68 96 50 105 C32 96 16 78 16 52 Z"/><path class="step" d="M24 44 H42 V30 H60 V40 H76"/><path d="M27 78 V65 L32 59 L37 65 V78"/><path d="M39 78 V65 L44 59 L49 65 V78"/><path d="M51 78 V53 L56 47 L61 53 V78"/><path d="M63 78 V53 L68 47 L73 53 V78"/><path d="M22 78 H78"/></svg><img class="uni" src="photos/ucd-logo.png" alt="University College Dublin" hidden onload="this.hidden=false;this.previousElementSibling.style.display='none'">
               <small>UCD School of Economics</small>
             </div>
           </a>
           <div>
-            <h2>Is Housing Like Irish Weather?</h2>
-            <p class="meta">Undergraduate thesis, UCD School of Economics. Supervised by Prof. Eoghan O'Neill.</p>
-            <p class="body">Volatility regimes and asymmetric transmission in the Irish housing market.</p>
-            <p class="body"><b>The model.</b> A three-stage hierarchical Bayesian MS-VAR(X) across demand, supply, credit, asset and residential property price blocks, under two latent volatility regimes.</p>
-            <p class="body"><b>The JA Prior.</b> A hierarchical Student-t shrinkage prior that nests the Minnesota prior as a limiting case, with shrinkage, lag decay and tail thickness estimated from the data.</p>
-            <p class="body"><b>The inference.</b> A differentiable Hamilton filter inside NUTS marginalises the discrete regimes, addressing generated-regressor bias across the modelling stages.</p>
-            <div class="actions"><a class="status" data-file="papers/thesis.pdf">PDF coming soon</a><button class="chip" type="button" data-copy="Aketch, J. R. (2026). Is housing like Irish weather? Volatility regimes and asymmetric transmission in the Irish housing market [Undergraduate thesis]. University College Dublin.">Copy citation</button><button class="chip" type="button" data-copy="@thesis{aketch2026housing,&#10;  author = {Aketch, James Rafiki},&#10;  title = {Is Housing Like Irish Weather? Volatility Regimes and Asymmetric Transmission in the Irish Housing Market},&#10;  type = {Undergraduate thesis},&#10;  institution = {University College Dublin},&#10;  year = {2026}&#10;}">Copy BibTeX</button></div>
+            <h2>Housing Like Irish Weather?</h2>
+            <p class="meta">Undergraduate thesis, UCD School of Economics, April 2026. Supervised by Prof. Eoghan O'Neill.</p>
+            <p class="body">Volatility regimes and asymmetric transmission in the Irish housing market. The question: does demand feed through to housing differently in calm and stressed times?</p>
+            <p class="body"><b>Identification.</b> Regimes are identified from the demand block (modified domestic demand, rent-to-income, unemployment and CPI) rather than from house prices, so the thing that defines a regime is kept separate from the outcomes it is meant to explain.</p>
+            <p class="body"><b>The 𝔍𝔄 prior.</b> A hierarchical Student-t shrinkage prior for Markov-switching VARs. Shrinkage intensity τ<sub>A</sub>, lag decay φ and tail thickness ν<sub>A</sub> are estimated jointly with the coefficients, and it nests the Minnesota prior as a limiting case (ν<sub>A</sub> → ∞, φ → 1).</p>
+            <p class="body"><b>The inference.</b> A differentiable Hamilton filter inside the No-U-Turn Sampler marginalises the regime sequence at every leapfrog step, so regime uncertainty flows through every stage instead of being frozen as a generated regressor.</p>
+            <div class="actions"><a class="status" href="papers/thesis.pdf" target="_blank" rel="noopener">Read the PDF</a><button class="chip" type="button" data-copy="Aketch, J. R. (2026). Housing like Irish weather? Volatility regimes and asymmetric transmission in the Irish housing market [Undergraduate thesis, University College Dublin].">Copy citation</button><button class="chip" type="button" data-copy="@thesis{aketch2026housing,&#10;  author = {Aketch, James Rafiki},&#10;  title = {Housing Like Irish Weather? Volatility Regimes and Asymmetric Transmission in the Irish Housing Market},&#10;  type = {Undergraduate thesis},&#10;  institution = {University College Dublin},&#10;  year = {2026}&#10;}">Copy BibTeX</button></div>
           </div>
         </div>
+      </section>
+
+      <section class="r-block" id="findings">
+        <div class="head">
+          <h2>What I found</h2>
+          <p>Ninety-eight quarters of Irish data. The asset block, not house prices themselves, is where the regime story lives.</p>
+        </div>
+        <div class="findings">
+          <div class="fd"><b>28 quarters</b><p>One high-volatility episode in the asset block, 2008Q2 to 2015Q1. Five times longer than the matching demand episode, consistent with a financial accelerator keeping stress alive long after the shock.</p></div>
+          <div class="fd"><b>About 2×</b><p>The credit block's response to the shadow rate is roughly twice as large in the high-volatility regime, but stress there is short-lived: a two to three quarter window for policy.</p></div>
+          <div class="fd"><b>5.09×</b><p>Construction cost volatility amplifies by this factor in the high-volatility regime, while quantities don't follow. Supply is held back by non-price constraints.</p></div>
+          <div class="fd"><b>36.6%</b><p>The long-run probability of the high-volatility regime in the asset block. House prices themselves show only modest, imprecise regime separation.</p></div>
+        </div>
+        <p class="policy">The policy point: macroprudential tools calibrated on single-regime estimates, or triggered by price thresholds, risk being miscalibrated in exactly the periods where calibration matters most.</p>
       </section>
 
       <section class="r-block" id="simulator">
         <div class="head">
           <h2>Play with the idea</h2>
-          <p>A toy market that switches between a calm and a volatile regime, which is the core idea behind my thesis. Drag the sliders to change how sticky each regime is, or draw a new history.</p>
+          <p>A toy market that switches between a calm regime S<sub>0</sub> and a high-volatility regime S<sub>1</sub>, the core idea behind my thesis. Drag the sliders to change how sticky each regime is, or draw a new history.</p>
         </div>
         <div class="sim">
           <svg class="sim-plot" viewBox="0 0 800 260" preserveAspectRatio="none" role="img" aria-label="Simulated index path, with volatile periods shaded">
             <defs><clipPath id="sim-clip"><rect x="0" y="0" width="800" height="260"/></clipPath></defs>
             <line class="axis" x1="0" y1="259" x2="800" y2="259"/>
-            <g clip-path="url(#sim-clip)"><g class="bands"></g><path class="line" d=""/></g>
+            <g clip-path="url(#sim-clip)"><g class="bands"><rect class="band" x="61.5" y="0" width="18.7" height="260"/><rect class="band" x="115.1" y="0" width="34.8" height="260"/><rect class="band" x="208.7" y="0" width="24.1" height="260"/><rect class="band" x="248.8" y="0" width="24.1" height="260"/><rect class="band" x="305.0" y="0" width="8.0" height="260"/><rect class="band" x="326.4" y="0" width="2.7" height="260"/><rect class="band" x="331.8" y="0" width="77.6" height="260"/><rect class="band" x="454.8" y="0" width="21.4" height="260"/><rect class="band" x="532.4" y="0" width="5.4" height="260"/><rect class="band" x="553.8" y="0" width="18.7" height="260"/><rect class="band" x="615.4" y="0" width="91.0" height="260"/></g><path class="line" d="M0.0 238.1L2.7 234.5L5.4 228.3L8.0 223.2L10.7 220.0L13.4 221.1L16.1 213.6L18.7 209.6L21.4 207.4L24.1 207.2L26.8 208.9L29.4 207.9L32.1 203.8L34.8 201.1L37.5 195.5L40.1 191.3L42.8 189.0L45.5 185.9L48.2 182.1L50.8 175.3L53.5 178.6L56.2 171.8L58.9 172.8L61.5 188.5L64.2 174.9L66.9 158.8L69.6 166.0L72.2 183.4L74.9 187.7L77.6 166.8L80.3 164.3L82.9 165.7L85.6 168.0L88.3 174.2L91.0 171.7L93.6 170.5L96.3 168.4L99.0 172.8L101.7 171.5L104.3 177.8L107.0 176.6L109.7 179.6L112.4 184.8L115.1 204.9L117.7 221.1L120.4 235.6L123.1 236.1L125.8 236.7L128.4 230.1L131.1 242.1L133.8 215.1L136.5 185.4L139.1 214.6L141.8 208.5L144.5 218.2L147.2 223.6L149.8 223.7L152.5 220.1L155.2 210.0L157.9 208.2L160.5 206.8L163.2 205.6L165.9 206.4L168.6 209.6L171.2 210.1L173.9 210.2L176.6 212.1L179.3 214.1L181.9 214.2L184.6 214.2L187.3 213.6L190.0 213.6L192.6 213.6L195.3 218.3L198.0 215.2L200.7 215.2L203.3 215.1L206.0 213.0L208.7 183.5L211.4 174.3L214.0 171.0L216.7 194.3L219.4 208.3L222.1 190.4L224.7 220.4L227.4 222.6L230.1 211.8L232.8 211.6L235.5 212.5L238.1 212.3L240.8 210.0L243.5 210.4L246.2 207.8L248.8 191.8L251.5 199.5L254.2 210.5L256.9 198.6L259.5 179.0L262.2 159.8L264.9 172.7L267.6 155.8L270.2 162.1L272.9 151.2L275.6 148.1L278.3 141.4L280.9 139.6L283.6 142.6L286.3 144.9L289.0 148.8L291.6 150.5L294.3 147.8L297.0 143.3L299.7 140.4L302.3 141.4L305.0 117.3L307.7 119.5L310.4 114.9L313.0 112.9L315.7 109.7L318.4 108.8L321.1 103.8L323.7 102.8L326.4 75.2L329.1 70.0L331.8 74.8L334.4 69.2L337.1 72.5L339.8 65.7L342.5 78.2L345.2 74.2L347.8 77.4L350.5 103.4L353.2 117.3L355.9 131.6L358.5 133.0L361.2 138.6L363.9 134.4L366.6 144.9L369.2 162.0L371.9 176.4L374.6 174.2L377.3 168.2L379.9 181.1L382.6 201.0L385.3 185.8L388.0 177.4L390.6 200.7L393.3 193.2L396.0 179.6L398.7 165.1L401.3 150.5L404.0 141.4L406.7 163.3L409.4 159.4L412.0 151.5L414.7 145.4L417.4 143.2L420.1 142.1L422.7 139.0L425.4 141.6L428.1 141.3L430.8 140.1L433.4 141.8L436.1 137.9L438.8 137.5L441.5 140.7L444.1 139.0L446.8 132.5L449.5 126.0L452.2 125.4L454.8 107.2L457.5 106.4L460.2 132.0L462.9 150.6L465.6 128.6L468.2 162.8L470.9 184.8L473.6 217.7L476.3 216.7L478.9 215.6L481.6 212.7L484.3 215.6L487.0 218.9L489.6 214.2L492.3 214.9L495.0 216.5L497.7 209.9L500.3 208.7L503.0 202.6L505.7 198.5L508.4 192.1L511.0 193.1L513.7 190.0L516.4 192.1L519.1 186.4L521.7 191.5L524.4 191.6L527.1 190.6L529.8 188.0L532.4 195.3L535.1 185.3L537.8 185.2L540.5 180.8L543.1 185.2L545.8 184.1L548.5 189.4L551.2 187.1L553.8 178.8L556.5 207.3L559.2 207.8L561.9 169.0L564.5 177.7L567.2 164.2L569.9 171.2L572.6 168.3L575.3 167.6L577.9 161.1L580.6 157.3L583.3 151.1L586.0 144.3L588.6 136.4L591.3 132.7L594.0 128.5L596.7 136.2L599.3 130.7L602.0 129.8L604.7 127.1L607.4 120.8L610.0 119.0L612.7 114.7L615.4 116.5L618.1 115.8L620.7 111.4L623.4 107.6L626.1 114.5L628.8 138.5L631.4 125.4L634.1 119.8L636.8 103.7L639.5 111.9L642.1 84.1L644.8 78.6L647.5 77.7L650.2 71.5L652.8 73.3L655.5 68.8L658.2 83.5L660.9 85.6L663.5 94.5L666.2 72.3L668.9 63.1L671.6 32.6L674.2 44.3L676.9 36.0L679.6 18.7L682.3 17.9L684.9 30.9L687.6 33.2L690.3 37.2L693.0 38.7L695.7 40.7L698.3 69.5L701.0 56.9L703.7 43.6L706.4 38.1L709.0 41.2L711.7 41.0L714.4 38.1L717.1 37.9L719.7 36.1L722.4 37.8L725.1 38.4L727.8 41.1L730.4 41.4L733.1 40.6L735.8 41.6L738.5 44.1L741.1 49.0L743.8 47.7L746.5 46.6L749.2 47.5L751.8 47.1L754.5 42.0L757.2 46.8L759.9 47.6L762.5 53.3L765.2 52.1L767.9 49.1L770.6 44.9L773.2 43.7L775.9 41.5L778.6 41.0L781.3 41.7L783.9 44.5L786.6 46.6L789.3 40.2L792.0 40.7L794.6 38.8L797.3 36.2L800.0 35.3"/></g>
           </svg>
-          <div class="legend"><span class="lc">Simulated index</span><span class="lv">Volatile regime</span></div>
+          <div class="legend"><span class="lc">Simulated index</span><span class="lv">High-volatility regime (S<sub>1</sub>)</span></div>
           <div class="controls">
-            <label><b>How sticky is calm?</b><input id="p-calm" type="range" min="0.80" max="0.995" step="0.005" value="0.97"><output id="o-calm" for="p-calm"></output></label>
-            <label><b>How sticky is volatility?</b><input id="p-vol" type="range" min="0.60" max="0.99" step="0.005" value="0.90"><output id="o-vol" for="p-vol"></output></label>
+            <label><b>Calm stays calm, p<sub>00</sub></b><input id="p-calm" type="range" min="0.80" max="0.995" step="0.005" value="0.97"><output id="o-calm" for="p-calm">0.970, calm spells last about 33 quarters</output></label>
+            <label><b>Stress stays stressed, p<sub>11</sub></b><input id="p-vol" type="range" min="0.60" max="0.99" step="0.005" value="0.90"><output id="o-vol" for="p-vol">0.900, volatile spells last about 10 quarters</output></label>
             <div style="display:flex;gap:10px;flex-wrap:wrap"><button class="btn solid redraw" type="button">New draw</button><button class="chip reset-sim" type="button">Reset</button></div>
           </div>
-          <p class="sim-summary" aria-live="polite"></p>
-          <p class="sim-note">A toy two-state Markov-switching model with made-up parameters. It illustrates the idea; it is not my thesis model or its estimates.</p>
+          <p class="sim-summary" aria-live="polite">Long-run share of time in S<sub>1</sub>: 23%. Spectral gap 0.130, so regimes here are very persistent. This history switched regime 22 times.</p>
+          <p class="sim-note">A toy two-state Markov-switching model with made-up parameters, not my thesis model. For scale, the thesis estimates a spectral gap of 0.195 for the asset block (very persistent, like the default here) and about 0.628 for property prices (fast turnover). Drag p<sub>00</sub> and p<sub>11</sub> down to see the second kind.</p>
         </div>
       </section>
 
