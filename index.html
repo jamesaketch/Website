@@ -8,6 +8,12 @@
 <meta property="og:title" content="James Rafiki Aketch">
 <meta property="og:description" content="Photography, research, and quantitative investing. Dublin.">
 <meta property="og:type" content="website">
+<meta property="og:url" content="https://aketch.ie/">
+<meta property="og:image" content="https://aketch.ie/photos/portrait.jpg">
+<link rel="canonical" href="https://aketch.ie/">
+<meta name="theme-color" content="#dccab4" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#1b120e" media="(prefers-color-scheme: dark)">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%237a4524'/%3E%3Ctext x='32' y='46' text-anchor='middle' font-family='Georgia,serif' font-style='italic' font-size='40' fill='%23f3e7d6'%3EA%3C/text%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
@@ -57,6 +63,7 @@
 }
 
 *, *::before, *::after { box-sizing: border-box; }
+[hidden] { display: none !important; }
 html { height: 100%; scroll-behavior: smooth; scroll-padding-top: calc(env(safe-area-inset-top, 0px) + 76px); }
 body {
   margin: 0; min-height: 100%;
@@ -132,8 +139,8 @@ h2 { font-family: var(--serif); font-weight: 400; font-size: clamp(38px, 6vw, 64
 .about .prose p:not(:first-child) { color: var(--muted); }
 
 /* papers */
-.papers { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 28px; }
-.paper { text-decoration: none; display: grid; gap: 14px; align-content: start; }
+.papers { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 460px), 1fr)); gap: clamp(28px, 4vw, 48px); }
+.paper { text-decoration: none; display: grid; grid-template-columns: minmax(150px, 210px) 1fr; gap: 26px; align-items: center; }
 .cover {
   aspect-ratio: 3 / 4; border-radius: 3px 8px 8px 3px; padding: 22px 20px;
   display: flex; flex-direction: column; justify-content: space-between;
@@ -142,10 +149,9 @@ h2 { font-family: var(--serif); font-weight: 400; font-size: clamp(38px, 6vw, 64
   box-shadow: 0 14px 28px -18px rgba(20, 8, 2, 0.55);
   transition: transform .2s ease;
 }
-a.paper:hover .cover { transform: translateY(-4px); }
-.cover b { font-family: var(--serif); font-weight: 400; font-size: 25px; line-height: 1.1; }
+.cover b { font-family: var(--serif); font-weight: 400; font-size: 21px; line-height: 1.12; }
 .cover small { color: var(--muted); font-size: 13px; }
-.paper h3 { margin: 0; font-size: 17px; font-weight: 600; line-height: 1.3; }
+.paper h3 { margin: 0 0 8px; font-family: var(--serif); font-weight: 400; font-size: 28px; line-height: 1.1; }
 .paper p { margin: 0; color: var(--muted); font-size: 15px; }
 
 /* certificates */
@@ -198,21 +204,54 @@ dialog#viewer[open] { display: grid; place-items: center; }
 #viewer .vcount { position: absolute; bottom: calc(env(safe-area-inset-bottom, 0px) + 14px); left: 0; right: 0; text-align: center; margin: 0; font-size: 14px; color: #b39d88; }
 @media (max-width: 720px) { #viewer .vprev, #viewer .vnext { top: auto; bottom: calc(env(safe-area-inset-bottom, 0px) + 44px); transform: none; } #viewer img { max-height: 74vh; } }
 
+/* paper grain behind everything */
+body::before { content: ""; position: fixed; inset: 0; z-index: -1; pointer-events: none; opacity: .35;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .16 0 0 0 0 .1 0 0 0 0 .07 0 0 0 .5 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"); }
+
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) body::before { opacity: .25; } }
+:root[data-theme="dark"] body::before { opacity: .25; }
+
+/* hero regime line */
+.regime { display: block; width: 100%; height: 64px; margin-top: clamp(44px, 7vw, 72px); color: var(--accent); opacity: .75; overflow: visible; }
+.regime path { fill: none; stroke: currentColor; stroke-width: 2; vector-effect: non-scaling-stroke; stroke-linejoin: miter; }
+
+/* research covers */
+.cover .kind { display: block; color: var(--muted); font-size: 13px; margin-bottom: 10px; }
+.cover .motif { width: 100%; height: auto; color: var(--accent); }
+.cover .motif path { fill: none; stroke: currentColor; stroke-width: 2; }
+.cover .motif .ghost { stroke-dasharray: 4 5; opacity: .6; }
+.paper .status { color: var(--accent); font-weight: 600; font-size: 14px; margin-top: 8px; }
+a.paper[href] { cursor: pointer; }
+a.paper[href]:hover .cover { transform: translateY(-4px); }
+a.paper:not([href]) { cursor: default; }
+
+.skip { position: absolute; left: 12px; top: -60px; z-index: 20; background: var(--accent); color: var(--accent-ink); padding: 8px 14px; border-radius: 999px; text-decoration: none; font-weight: 600; }
+.skip:focus { top: calc(env(safe-area-inset-top, 0px) + 10px); }
+
 /* one orchestrated moment: the name settles in */
 @media (prefers-reduced-motion: no-preference) {
   .hero h1 span { animation: settle 1s cubic-bezier(.2,.7,.2,1) both; }
   .hero h1 span:nth-child(2) { animation-delay: .14s; }
+  .orbit .spin { transform-box: view-box; transform-origin: 120px 120px; animation: spin 40s linear infinite; }
+  .orbit .s2 { animation-duration: 70s; }
+  .orbit .s3 { animation-duration: 110s; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .regime { animation: reveal 1.6s cubic-bezier(.6,.1,.2,1) .5s both; }
+  @keyframes reveal { from { clip-path: inset(0 100% 0 0); } to { clip-path: inset(0 0 0 0); } }
   @keyframes settle { from { opacity: 0; transform: translateY(22px); letter-spacing: 0.03em; } to { opacity: 1; transform: none; } }
 }
 @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } .cover { transition: none; } }
 
 @media (max-width: 720px) {
   .bar .wrap { flex-direction: column; align-items: flex-start; gap: 0; padding: 8px 0 6px; }
-  .bar nav { width: 100%; margin-left: -11px; }
+  .bar nav { width: 100%; margin-left: -8px; gap: 0; }
+  .bar nav a { font-size: 14px; padding: 6px 8px; }
   html { scroll-padding-top: calc(env(safe-area-inset-top, 0px) + 104px); }
   .about, .amc { grid-template-columns: 1fr; }
   .portrait { max-width: 240px; }
   .certs li { grid-template-columns: 60px 1fr; }
+  .paper { grid-template-columns: 1fr; }
+  .cover { max-width: 240px; }
   .certs time { grid-column: 2; }
 }
 </style>
@@ -221,12 +260,13 @@ dialog#viewer[open] { display: grid; place-items: center; }
 </script>
 </head>
 <body>
+<a class="skip" href="#top">Skip to content</a>
 
 <header class="bar">
   <div class="wrap">
     <a class="mark" href="#top">Aketch</a>
     <nav aria-label="Main">
-      <a href="#photography">Photography</a>
+      <a href="#photography" hidden>Photography</a>
       <a href="#about">About</a>
       <a href="#research">Research</a>
       <a href="#education">Education</a>
@@ -245,12 +285,14 @@ dialog#viewer[open] { display: grid; place-items: center; }
       <div class="row">
         <a class="btn solid" href="#research">Read my research</a>
         <a class="btn ghost" href="#contact">Get in touch</a>
+        <a class="btn ghost" data-file="cv.pdf" download hidden>Download CV</a>
       </div>
+      <svg class="regime" viewBox="0 0 1000 64" preserveAspectRatio="none" aria-hidden="true"><path d="M0 50 H110 V20 H250 V44 H330 V12 H540 V48 H690 V26 H850 V38 H1000"/></svg>
     </div>
   </div>
 
   <!-- PHOTOGRAPHY: replace each .ph div with <img src="photos/your-file.jpg" alt="..."> once the site is on aketch.ie -->
-  <section id="photography">
+  <section id="photography" hidden>
     <div class="wrap">
       <div class="head">
         <h2>Photography</h2>
@@ -270,7 +312,7 @@ dialog#viewer[open] { display: grid; place-items: center; }
 
   <section id="about">
     <div class="wrap about">
-      <div class="portrait"><span>Portrait</span><img src="photos/portrait.jpg" alt="James Rafiki Aketch" onerror="this.remove()"></div>
+      <div class="portrait"><img src="photos/portrait.jpg" alt="James Rafiki Aketch" width="960" height="1200"></div>
       <div class="prose">
         <p>I'm a final-year economics and mathematics student in Dublin, interested in how markets shift between regimes.</p>
         <p>My thesis uses a Bayesian Markov-switching model to study the Irish housing market, and I co-author a paper on EU student admissions to UK universities after Brexit.</p>
@@ -284,23 +326,26 @@ dialog#viewer[open] { display: grid; place-items: center; }
     <div class="wrap">
       <div class="head">
         <h2>Research</h2>
-        <p>Papers and my undergraduate thesis.</p>
+        <p>My undergraduate thesis and a co-authored paper.</p>
       </div>
+      <!-- PDFs: put them in the papers folder as thesis.pdf and brexit-paper.pdf and the cards become links on their own -->
       <div class="papers">
-        <div class="paper">
+        <a class="paper" data-file="papers/thesis.pdf">
           <div class="cover">
-            <b>A Bayesian Markov-Switching VAR for Irish Housing Markets</b>
-            <small>Undergraduate thesis<br>UCD School of Economics</small>
+            <div><span class="kind">Undergraduate thesis</span><b>A Bayesian Markov-Switching VAR for Irish Housing Markets</b></div>
+            <svg class="motif" viewBox="0 0 200 50" aria-hidden="true"><path d="M0 40 H38 V12 H96 V36 H128 V8 H200"/></svg>
+            <small>UCD School of Economics</small>
           </div>
-          <div><h3>Irish housing regimes</h3><p>Thesis. PDF coming soon.</p></div>
-        </div>
-        <div class="paper">
+          <div><h3>Irish housing regimes</h3><p>Does the Irish housing market move between distinct regimes, and what drives the switches between them?</p><p class="status">PDF coming soon</p></div>
+        </a>
+        <a class="paper" data-file="papers/brexit-paper.pdf">
           <div class="cover">
-            <b>EU Student Admissions to UK Universities after Brexit</b>
-            <small>Co-authored paper</small>
+            <div><span class="kind">Co-authored paper</span><b>EU Student Admissions to UK Universities after Brexit</b></div>
+            <svg class="motif" viewBox="0 0 200 50" aria-hidden="true"><path d="M0 25 H92"/><path d="M92 25 L200 8"/><path class="ghost" d="M92 25 L200 42"/></svg>
+            <small>Working paper</small>
           </div>
-          <div><h3>Brexit and student admissions</h3><p>Co-authored paper. PDF coming soon.</p></div>
-        </div>
+          <div><h3>Brexit and student admissions</h3><p>How did Brexit change the flow of EU students into UK universities?</p><p class="status">PDF coming soon</p></div>
+        </a>
       </div>
     </div>
   </section>
@@ -322,7 +367,6 @@ dialog#viewer[open] { display: grid; place-items: center; }
         <li><div class="thumb mark">G</div><div><strong>German, online courses</strong><span>Goethe-Institut. Three certificates.</span></div><time></time></li>
         <li><div class="thumb mark">L</div><div><strong>Look into Law</strong><span>Law Society of Ireland.</span></div><time>2021</time></li>
       </ul>
-      <p class="note">Bloomberg ARN 9785205</p>
     </div>
   </section>
 
@@ -345,7 +389,7 @@ dialog#viewer[open] { display: grid; place-items: center; }
           <span><b>Instagram</b><small>@jaketchphoto</small></span>
         </a>
         <a class="profile" href="https://github.com/jamesaketch" rel="me noopener">
-          <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 25c-5 1.5-5-2.5-7-3m14 6v-4.2a3.6 3.6 0 0 0-1-2.8c3.4-.4 7-1.7 7-7.6a5.9 5.9 0 0 0-1.6-4.1 5.5 5.5 0 0 0-.1-4.1s-1.3-.4-4.2 1.6a14.500 14.500 0 0 0-7.600 0C8.600 5.700 7.300 6.100 7.300 6.100a5.500 5.500 0 0 0-.1 4.100A5.900 5.900 0 0 0 5.600 14.300c0 5.900 3.600 7.200 7 7.600a3.600 3.600 0 0 0-1 2.800V28" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 10l-6 6 6 6M20 10l6 6-6 6"/></svg>
           <span><b>GitHub</b><small>Code</small></span>
         </a>
       </div>
@@ -365,9 +409,9 @@ dialog#viewer[open] { display: grid; place-items: center; }
           <circle cx="120" cy="120" r="46" opacity=".8"/>
           <circle cx="120" cy="120" r="80" opacity=".55"/>
           <circle cx="120" cy="120" r="112" opacity=".3"/>
-          <circle cx="166" cy="120" r="5" fill="currentColor" stroke="none"/>
-          <circle cx="63" cy="177" r="5" fill="currentColor" stroke="none"/>
-          <circle cx="120" cy="8" r="5" fill="currentColor" stroke="none"/>
+          <g class="spin s1"><circle cx="166" cy="120" r="5" fill="currentColor" stroke="none"/></g>
+          <g class="spin s2"><circle cx="63" cy="177" r="5" fill="currentColor" stroke="none"/></g>
+          <g class="spin s3"><circle cx="120" cy="8" r="5" fill="currentColor" stroke="none"/></g>
         </svg>
       </div>
     </div>
@@ -385,7 +429,7 @@ dialog#viewer[open] { display: grid; place-items: center; }
 
 <footer>
   <div class="wrap">
-    <span>James Rafiki Aketch</span>
+    <span>&copy; 2026 James Rafiki Aketch</span>
     <span>Dublin, Ireland</span>
   </div>
 </footer>
@@ -424,7 +468,7 @@ dialog#viewer[open] { display: grid; place-items: center; }
   }
 
   function add(it) {
-    if (!started) { gallery.innerHTML = ''; started = true; }
+    if (!started) { gallery.innerHTML = ''; started = true; document.getElementById('photography').hidden = false; document.querySelector('.bar a[href="#photography"]').hidden = false; }
     var idx = items.push(it) - 1;
     var fig = document.createElement('figure');
     fig.className = 'shot';
@@ -497,6 +541,20 @@ dialog#viewer[open] { display: grid; place-items: center; }
   }, { passive: true });
 
   run();
+
+  // PDFs and CV: show or link them only once the file actually exists in the repo
+  document.querySelectorAll('[data-file]').forEach(function (el) {
+    var url = el.getAttribute('data-file');
+    fetch(url, { method: 'HEAD' }).then(function (r) {
+      if (!r.ok) return;
+      el.setAttribute('href', url);
+      if (el.classList.contains('paper')) {
+        el.setAttribute('target', '_blank'); el.setAttribute('rel', 'noopener');
+        var st = el.querySelector('.status'); if (st) st.textContent = 'Read the PDF';
+      }
+      el.hidden = false;
+    }).catch(function () {});
+  });
 })();
 </script>
 </body>
