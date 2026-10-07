@@ -402,6 +402,7 @@
     { t: 'About', k: 'bio me', go: '/#about' },
     { t: 'Research', k: 'thesis papers housing brexit', go: '/research.html' },
     { t: 'Regime simulator', k: 'model play markov switching interactive', go: '/research.html#simulator' },
+    { t: 'SHRED maths', k: 'ja prior equations student-t shrinkage regime transition spectral gap math', go: '/#shred' },
     { t: 'Skills', k: 'python code methods tools', go: '/#skills' },
     { t: 'Beyond the work', k: 'rugby braille languages interests', go: '/#beyond' },
     { t: 'Education', k: 'ucd degree certificates bloomberg', go: '/#education' },
@@ -783,4 +784,45 @@
     af.addEventListener('focus', hunt);
     af.addEventListener('click', function (e) { if (!e.target.closest('a')) hunt(); });
   }
+})();
+
+
+/* ===================== SHRED maths: tap a symbol, a line says what it is ===================== */
+(function () {
+  document.querySelectorAll('.math-card').forEach(function (card) {
+    var say = card.querySelector('.math-say');
+    var chips = {};
+    card.querySelectorAll('.mchip').forEach(function (c) { chips[c.getAttribute('data-t')] = c; });
+    function show(key) {
+      var chip = chips[key];
+      if (!chip) return;
+      card.querySelectorAll('[data-t]').forEach(function (el) { el.classList.toggle('on', el.getAttribute('data-t') === key); });
+      say.textContent = '';
+      var b = document.createElement('b');
+      b.textContent = chip.getAttribute('data-name');
+      say.appendChild(b);
+      say.appendChild(document.createTextNode(': ' + chip.getAttribute('data-say')));
+    }
+    card.querySelectorAll('.mathline [data-t]').forEach(function (el) {
+      el.addEventListener('click', function () { show(el.getAttribute('data-t')); });
+      el.addEventListener('mouseenter', function () { show(el.getAttribute('data-t')); });
+    });
+    /* KaTeX fraction denominators swallow pointer hits, so treat anything below the fraction line as the denominator term */
+    card.querySelectorAll('.mathline[data-denom]').forEach(function (ml) {
+      var key = ml.getAttribute('data-denom'), last = '';
+      var below = function (e) {
+        var line = ml.querySelector('.frac-line');
+        if (!line || e.target.closest('[data-t]')) return false;
+        var r = line.getBoundingClientRect();
+        var m = ml.querySelector('.mfrac').getBoundingClientRect();
+        return e.clientY > r.bottom && e.clientX >= m.left && e.clientX <= m.right;
+      };
+      ml.addEventListener('click', function (e) { if (below(e)) show(key); });
+      ml.addEventListener('mousemove', function (e) { if (below(e) && last !== key) { last = key; show(key); } else if (!below(e)) last = ''; });
+    });
+    card.querySelectorAll('.mchip').forEach(function (c) {
+      c.addEventListener('click', function () { show(c.getAttribute('data-t')); });
+      c.addEventListener('focus', function () { show(c.getAttribute('data-t')); });
+    });
+  });
 })();
