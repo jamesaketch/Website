@@ -1,6 +1,12 @@
 # aketch.ie — interface update
 
-This package contains the complete website, including the original photographs, papers and icons, with the supplied newer design used as the starting point. It has not been pushed to GitHub or published.
+This package contains the complete website, including the original photographs, papers and icons, with the supplied newer design used as the starting point.
+
+## Follow-up: native sliders and Research
+
+- SHRED moved intact from the homepage into Research, after the regime simulator. Equations, copy controls, speech, reactive terms and 2D/3D graphs are retained.
+- SHRED sliders now use the browser/OS native range control, matching the Research simulator. Custom track/thumb painting has been removed.
+- Homepage and search links point to the new location; old homepage SHRED links redirect. Updated CSS/JS URLs avoid reuse of the preceding asset versions.
 
 ## Changes
 

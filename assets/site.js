@@ -405,7 +405,7 @@
     { t: 'About', k: 'bio me', go: '/#about' },
     { t: 'Research', k: 'thesis papers housing brexit', go: '/research.html' },
     { t: 'Regime simulator', k: 'model play markov switching interactive', go: '/research.html#simulator' },
-    { t: 'SHRED maths', k: 'ja prior equations student-t shrinkage regime transition spectral gap math', go: '/#shred' },
+    { t: 'SHRED maths', k: 'ja prior equations student-t shrinkage regime transition spectral gap math', go: '/research.html#shred' },
     { t: 'Skills', k: 'python code methods tools', go: '/#skills' },
     { t: 'Beyond the work', k: 'rugby braille languages interests', go: '/#beyond' },
     { t: 'Education', k: 'ucd degree certificates bloomberg', go: '/#education' },
