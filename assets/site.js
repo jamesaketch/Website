@@ -10,7 +10,7 @@
 
   /* ---------------- theme ---------------- */
   function isDark() { var t = root.getAttribute('data-theme'); return t ? t === 'dark' : window.matchMedia('(prefers-color-scheme: dark)').matches; }
-  function toggleTheme() { var next = isDark() ? 'light' : 'dark'; root.setAttribute('data-theme', next); store('theme', next); }
+  function toggleTheme() { var next = isDark() ? 'light' : 'dark'; var apply = function () { root.setAttribute('data-theme', next); store('theme', next); }; if (document.startViewTransition && !reducedMotion()) document.startViewTransition(apply); else apply(); }
   var themeBtn = document.querySelector('.tbtn.theme');
   if (themeBtn) themeBtn.addEventListener('click', toggleTheme);
 
@@ -24,12 +24,12 @@
     { key: 'font', attr: 'data-font', val: 'readable', title: 'Low-vision font', desc: 'Atkinson Hyperlegible, designed by the Braille Institute for readers with low vision.' },
     { key: 'motion', attr: 'data-motion', val: 'reduced', title: 'Reduce motion', desc: 'Stops the animations and the spinning orbit.' }
   ];
-  function current(o) { return root.getAttribute(o.attr) === o.val; }
+  function optionEnabled(o) { return root.getAttribute(o.attr) === o.val; }
   function loadFont() {
     if (document.getElementById('a11y-font')) return;
     var l = document.createElement('link'); l.id = 'a11y-font'; l.rel = 'stylesheet'; l.href = FONT_URL; document.head.appendChild(l);
   }
-  if (current(OPTIONS[2])) loadFont();
+  if (optionEnabled(OPTIONS[2])) loadFont();
   function setOpt(o, on) {
     if (on) root.setAttribute(o.attr, o.val); else root.removeAttribute(o.attr);
     prefs[o.key] = on; store('a11y', JSON.stringify(prefs));
@@ -37,20 +37,22 @@
   }
 
   var panel = null, a11yBtn = document.querySelector('.tbtn.abtn');
+  if (a11yBtn) a11yBtn.removeAttribute('aria-controls');
   function buildPanel() {
     panel = document.createElement('div');
     panel.className = 'a11y-panel'; panel.id = 'a11y'; panel.hidden = true;
     panel.setAttribute('role', 'dialog'); panel.setAttribute('aria-label', 'Accessibility options');
     var html = '<p class="t">Accessibility</p><p class="d">These settings are remembered on this device.</p>';
     OPTIONS.forEach(function (o, i) {
-      html += '<button class="opt" type="button" data-i="' + i + '" aria-pressed="' + current(o) + '"><span><b>' + o.title + '</b><small>' + o.desc + '</small></span><span class="sw" aria-hidden="true"></span></button>';
+      html += '<button class="opt" type="button" data-i="' + i + '" aria-pressed="' + optionEnabled(o) + '"><span><b>' + o.title + '</b><small>' + o.desc + '</small></span><span class="sw" aria-hidden="true"></span></button>';
     });
     html += '<button class="chip reset" type="button">Reset to default</button>';
     panel.innerHTML = html;
     document.body.appendChild(panel);
+    if (a11yBtn) a11yBtn.setAttribute('aria-controls', 'a11y');
     panel.querySelectorAll('.opt').forEach(function (b) {
       b.addEventListener('click', function () {
-        var o = OPTIONS[+b.getAttribute('data-i')]; var on = !current(o);
+        var o = OPTIONS[+b.getAttribute('data-i')]; var on = !optionEnabled(o);
         setOpt(o, on); b.setAttribute('aria-pressed', on);
       });
     });
@@ -94,7 +96,7 @@
   document.querySelectorAll('.credits-open').forEach(function (b) { b.addEventListener('click', openCredits); });
 
   /* ---------------- copy helpers ---------------- */
-  function copy(text, done) { if (navigator.clipboard) navigator.clipboard.writeText(text).then(done || function () {}, function () {}); }
+  function copy(text, done) { if (!navigator.clipboard) { if (window.__aketch && window.__aketch.announce) window.__aketch.announce('Copy is unavailable. Please select the text to copy it.'); return; } navigator.clipboard.writeText(text).then(function () { if (done) done(); if (window.__aketch && window.__aketch.announce) window.__aketch.announce('Copied to clipboard'); }, function () { if (window.__aketch && window.__aketch.announce) window.__aketch.announce('Could not copy. Please select the text to copy it.'); }); }
   document.querySelectorAll('[data-copy]').forEach(function (btn) {
     var label = btn.textContent;
     btn.addEventListener('click', function () {
@@ -187,6 +189,7 @@
       if (!r.ok) return;
       el.setAttribute('href', url); el.setAttribute('target', '_blank'); el.setAttribute('rel', 'noopener');
       if (el.classList.contains('status')) el.textContent = 'Read the PDF';
+      if (el.classList.contains('cover-link')) { var pdf = document.createElement('span'); pdf.className = 'sr-only'; pdf.textContent = ' (PDF)'; el.appendChild(pdf); }
       el.hidden = false;
     }).catch(function () {});
   });
@@ -629,10 +632,7 @@
   var srTimer;
   A.announce = function (msg) { clearTimeout(srTimer); sr.textContent = ''; srTimer = setTimeout(function () { sr.textContent = msg; }, 60); };
 
-  document.addEventListener('click', function (e) {
-    var b = e.target.closest && e.target.closest('[data-copy]');
-    if (b) A.announce(/citation|BibTeX/i.test(b.textContent) ? 'Citation copied to clipboard' : 'Copied to clipboard');
-  });
+
   var LABELS = { 'data-theme': function (v) { return v === 'dark' ? 'Dark mode on' : 'Light mode on'; },
     'data-text': function (v) { return v ? 'Larger text on' : 'Larger text off'; },
     'data-contrast': function (v) { return v ? 'High contrast on' : 'High contrast off'; },
@@ -745,7 +745,13 @@
     var txt = pad(hh) + ':' + pad(mm) + ':' + pad(ss) + ':' + pad(ff);
     tc.forEach(function (el) { el.textContent = txt; });
   }
-  if (tc.length) { runTC(); setInterval(runTC, still() ? 1000 : 40); }
+  if (tc.length) {
+    var tcTimer;
+    function syncTC() { clearInterval(tcTimer); runTC(); if (!still() && !document.hidden) tcTimer = setInterval(runTC, 100); }
+    new MutationObserver(syncTC).observe(root, { attributes: true, attributeFilter: ['data-motion'] });
+    window.matchMedia('(prefers-reduced-motion: reduce)').addEventListener('change', syncTC);
+    document.addEventListener('visibilitychange', syncTC); syncTC();
+  }
 
   /* Dublin date and time in camcorder, film date-stamp and EXIF formats */
   var MON = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
@@ -759,7 +765,7 @@
     document.querySelectorAll('.film-stamp').forEach(function (el) { el.textContent = "'" + p.year.slice(2) + ' ' + p.month + ' ' + p.day; });
     document.querySelectorAll('.exif-time').forEach(function (el) { el.textContent = p.year + ':' + p.month + ':' + p.day + ' ' + p.hour + ':' + p.minute + ':' + p.second; });
   }
-  stamp(); setInterval(stamp, 1000);
+  stamp(); setInterval(function () { if (!document.hidden && !still()) stamp(); }, 1000);
 
   /* autofocus contact card: hunts, then locks */
   var af = document.querySelector('.af');
@@ -780,49 +786,217 @@
       var io = new IntersectionObserver(function (en) { if (en[0].isIntersecting) { hunt(); io.disconnect(); } }, { threshold: 0.55 });
       io.observe(af);
     } else lockNow();
-    af.addEventListener('pointerenter', hunt);
-    af.addEventListener('focus', hunt);
-    af.addEventListener('click', function (e) { if (!e.target.closest('a')) hunt(); });
+
+
+
   }
 })();
 
-
 /* ===================== SHRED maths: tap a symbol, a line says what it is ===================== */
 (function () {
-  document.querySelectorAll('.math-card').forEach(function (card) {
-    var say = card.querySelector('.math-say');
-    var chips = {};
-    card.querySelectorAll('.mchip').forEach(function (c) { chips[c.getAttribute('data-t')] = c; });
-    function show(key) {
-      var chip = chips[key];
-      if (!chip) return;
-      card.querySelectorAll('[data-t]').forEach(function (el) { el.classList.toggle('on', el.getAttribute('data-t') === key); });
-      say.textContent = '';
-      var b = document.createElement('b');
-      b.textContent = chip.getAttribute('data-name');
-      say.appendChild(b);
-      say.appendChild(document.createTextNode(': ' + chip.getAttribute('data-say')));
+  'use strict';
+  var cards = document.querySelectorAll('#shred .math-card');
+  if (!cards.length) return;
+  var root = document.documentElement;
+  var coarse = window.matchMedia('(pointer: coarse)').matches;
+  function reduced() { return root.getAttribute('data-motion') === 'reduced' || window.matchMedia('(prefers-reduced-motion: reduce)').matches; }
+
+  /* ---------- the maths behind the little charts ---------- */
+  function lgamma(x) {
+    var c = [76.18009172947146, -86.50532032941677, 24.01409824083091, -1.231739572450155, 0.1208650973866179e-2, -0.5395239384953e-5];
+    var y = x, tmp = x + 5.5; tmp -= (x + 0.5) * Math.log(tmp);
+    var ser = 1.000000000190015; for (var j = 0; j < 6; j++) ser += c[j] / ++y;
+    return -tmp + Math.log(2.5066282746310005 * ser / x);
+  }
+  function betacf(a, b, x) {
+    var FPMIN = 1e-300, qab = a + b, qap = a + 1, qam = a - 1, c = 1, d = 1 - qab * x / qap;
+    if (Math.abs(d) < FPMIN) d = FPMIN; d = 1 / d; var h = d;
+    for (var m = 1; m <= 200; m++) {
+      var m2 = 2 * m, aa = m * (b - m) * x / ((qam + m2) * (a + m2));
+      d = 1 + aa * d; if (Math.abs(d) < FPMIN) d = FPMIN; c = 1 + aa / c; if (Math.abs(c) < FPMIN) c = FPMIN; d = 1 / d; h *= d * c;
+      aa = -(a + m) * (qab + m) * x / ((a + m2) * (qap + m2));
+      d = 1 + aa * d; if (Math.abs(d) < FPMIN) d = FPMIN; c = 1 + aa / c; if (Math.abs(c) < FPMIN) c = FPMIN; d = 1 / d;
+      var del = d * c; h *= del; if (Math.abs(del - 1) < 3e-12) break;
     }
-    card.querySelectorAll('.mathline [data-t]').forEach(function (el) {
-      el.addEventListener('click', function () { show(el.getAttribute('data-t')); });
-      el.addEventListener('mouseenter', function () { show(el.getAttribute('data-t')); });
+    return h;
+  }
+  function betai(a, b, x) {
+    if (x <= 0) return 0; if (x >= 1) return 1;
+    var bt = Math.exp(lgamma(a + b) - lgamma(a) - lgamma(b) + a * Math.log(x) + b * Math.log(1 - x));
+    return x < (a + 1) / (a + b + 2) ? bt * betacf(a, b, x) / a : 1 - bt * betacf(b, a, 1 - x) / b;
+  }
+  function tTail2(nu, x) { return betai(nu / 2, 0.5, nu / (nu + x * x)); } /* P(|T| > x) */
+  function tpdf(nu, x) { return Math.exp(lgamma((nu + 1) / 2) - lgamma(nu / 2)) / Math.sqrt(nu * Math.PI) * Math.pow(1 + x * x / nu, -(nu + 1) / 2); }
+  function npdf(x) { return Math.exp(-x * x / 2) / Math.sqrt(2 * Math.PI); }
+  function erfc(x) {
+    var z = Math.abs(x), t = 1 / (1 + 0.5 * z);
+    var r = t * Math.exp(-z * z - 1.26551223 + t * (1.00002368 + t * (0.37409196 + t * (0.09678418 + t * (-0.18628806 + t * (0.27886807 + t * (-1.13520398 + t * (1.48851587 + t * (-0.82215223 + t * 0.17087277)))))))));
+    return x >= 0 ? r : 2 - r;
+  }
+  function gk(s) { return s.replace(/[\u03b1-\u03c9]/g, '<i class="gk">$&</i>'); }
+  function pct(p) { var v = p * 100; return (v < 10 ? v.toFixed(2) : v.toFixed(1)) + '%'; }
+  function fill(input) {
+    var lo = +input.min, hi = +input.max;
+    input.style.setProperty('--v', ((+input.value - lo) / (hi - lo) * 100) + '%');
+  }
+
+  /* ---------- the interactive charts ---------- */
+  var VIZ = {};
+
+  VIZ.tdist = function (box) {
+    var NU = [1, 2, 3, 4, 6, 8, 12, 20, 30, 50, 100];
+    var W = 320, H = 132, X0 = 8, X1 = 312, BASE = 112, TOP = 8, XR = 5, YMAX = 0.42;
+    function sx(x) { return X0 + (x + XR) / (2 * XR) * (X1 - X0); }
+    function sy(d) { return BASE - d / YMAX * (BASE - TOP); }
+    function curve(f, from, to) { var s = '', n = 120; for (var i = 0; i <= n; i++) { var x = from + (to - from) * i / n; s += (i ? 'L' : 'M') + sx(x).toFixed(1) + ' ' + sy(f(x)).toFixed(1); } return s; }
+    box.innerHTML =
+      '<p class="try-h">Try it: tail thickness</p>' +
+      '<svg class="viz" viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="">' +
+      '<line class="ax" x1="' + X0 + '" y1="' + BASE + '" x2="' + X1 + '" y2="' + BASE + '"/>' +
+      '<path class="tf" data-p="tl"/><path class="tf" data-p="tr"/>' +
+      [-3, 3].map(function (x) { return '<line class="gd" x1="' + sx(x) + '" y1="' + TOP + '" x2="' + sx(x) + '" y2="' + BASE + '"/>'; }).join('') +
+      '<path class="g" d="' + curve(npdf, -XR, XR) + '"/><path class="t" data-p="t"/>' +
+      [-3, 0, 3].map(function (x) { return '<line class="tk" x1="' + sx(x) + '" y1="' + BASE + '" x2="' + sx(x) + '" y2="' + (BASE + 5) + '"/><text x="' + sx(x) + '" y="' + (BASE + 19) + '" text-anchor="middle">' + (x === 0 ? '0' : (x < 0 ? '−3s' : '3s')) + '</text>'; }).join('') +
+      '</svg>' +
+      '<div class="vkey"><span><i></i>This prior (Student-t)</span><span><i class="dash"></i>Gaussian</span></div>' +
+      '<label class="rng"><span>Degrees of freedom <b data-val></b></span><input class="sl" type="range" min="0" max="' + (NU.length - 1) + '" step="1" value="2" style="--sc:var(--c-tails)"></label>' +
+      '<p class="try-note" data-note></p>';
+    var svg = box.querySelector('svg'), input = box.querySelector('input'), val = box.querySelector('[data-val]'), note = box.querySelector('[data-note]');
+    var tn = erfc(3 / Math.SQRT2);
+    function tails(nu, sign) { var s = '', n = 40; for (var i = 0; i <= n; i++) { var x = 3 + 2 * i / n; s += (i ? 'L' : 'M') + sx(sign * x).toFixed(1) + ' ' + sy(tpdf(nu, x)).toFixed(1); } return s + 'L' + sx(sign * 5).toFixed(1) + ' ' + BASE + 'L' + sx(sign * 3).toFixed(1) + ' ' + BASE + 'Z'; }
+    function update() {
+      var nu = NU[+input.value];
+      svg.querySelector('[data-p="t"]').setAttribute('d', curve(function (x) { return tpdf(nu, x); }, -XR, XR));
+      svg.querySelector('[data-p="tr"]').setAttribute('d', tails(nu, 1));
+      svg.querySelector('[data-p="tl"]').setAttribute('d', tails(nu, -1));
+      var tp = tTail2(nu, 3);
+      var label = nu >= 50 ? 'ν = ' + nu + ' (nearly Gaussian)' : 'ν = ' + nu + (nu <= 2 ? ' (very heavy tails)' : '');
+      val.innerHTML = gk(label);
+      input.setAttribute('aria-valuetext', nu + ' degrees of freedom');
+      note.innerHTML = gk('Beyond three scale units sits <b>' + pct(tp) + '</b> of this prior, against <b>' + pct(tn) + '</b> for a Gaussian. Heavier tails leave room for the occasional big coefficient.');
+      svg.setAttribute('aria-label', 'Student-t density with ' + nu + ' degrees of freedom against a Gaussian. Probability beyond three scale units: ' + pct(tp) + ' against ' + pct(tn) + '.');
+      fill(input);
+    }
+    input.addEventListener('input', update); update();
+  };
+
+  VIZ.lag = function (box) {
+    var rows = '';
+    for (var i = 1; i <= 6; i++) rows += '<div class="lbar"><span>lag ' + i + '</span><div class="tr"><i></i></div><b></b></div>';
+    box.innerHTML =
+      '<p class="try-h">Try it: prior scale by lag</p>' +
+      '<div class="lbars" role="img" aria-label="">' + rows + '</div>' +
+      '<label class="rng"><span><span>Global tightness <i class="gk">τ</i></span> <b data-tv></b></span><input class="sl" data-s="tau" type="range" min="0.1" max="1.5" step="0.05" value="0.5" style="--sc:var(--c-shrink)"></label>' +
+      '<label class="rng"><span><span>Lag decay <i class="gk">φ</i></span> <b data-pv></b></span><input class="sl" data-s="phi" type="range" min="0" max="2" step="0.05" value="1" style="--sc:var(--c-lag)"></label>' +
+      '<p class="try-note">Shorter bars mean a tighter prior, so that lag’s coefficient is pulled harder towards zero. The intercept sits apart at a loose scale of 10.</p>';
+    var bars = box.querySelectorAll('.lbar'), tau = box.querySelector('[data-s="tau"]'), phi = box.querySelector('[data-s="phi"]');
+    var tv = box.querySelector('[data-tv]'), pv = box.querySelector('[data-pv]'), group = box.querySelector('.lbars');
+    function update() {
+      var t = +tau.value, p = +phi.value, txt = [];
+      for (var i = 0; i < bars.length; i++) {
+        var s = t * Math.pow(i + 1, -p);
+        bars[i].querySelector('i').style.setProperty('--w', Math.min(100, s / 1.5 * 100) + '%');
+        bars[i].querySelector('b').textContent = s.toFixed(2);
+        txt.push('lag ' + (i + 1) + ' ' + s.toFixed(2));
+      }
+      tv.textContent = t.toFixed(2); pv.textContent = p.toFixed(2);
+      tau.setAttribute('aria-valuetext', t.toFixed(2)); phi.setAttribute('aria-valuetext', p.toFixed(2));
+      group.setAttribute('aria-label', 'Prior scale by lag: ' + txt.join(', '));
+      fill(tau); fill(phi);
+    }
+    tau.addEventListener('input', update); phi.addEventListener('input', update); update();
+  };
+
+  VIZ.trans = function (box) {
+    box.innerHTML =
+      '<p class="try-h">Try it: the persistence boost</p>' +
+      '<div class="tm" role="img" aria-label="">' +
+      '<span></span><span class="h">to regime 0</span><span class="h">to regime 1</span>' +
+      '<span class="h">from 0</span><div class="c" data-c="a"><span></span></div><div class="c" data-c="b"><span></span></div>' +
+      '<span class="h">from 1</span><div class="c" data-c="b"><span></span></div><div class="c" data-c="a"><span></span></div>' +
+      '</div>' +
+      '<label class="rng"><span><span>Persistence boost <i class="gk">κ</i></span> <b data-kv></b></span><input class="sl" type="range" min="0" max="8" step="0.1" value="3" style="--sc:var(--c-regime)"></label>' +
+      '<p class="try-note" data-note></p>' +
+      '<p class="try-note">An illustration with both latent scores at 0. In the model they are estimated, so real transition matrices are not this symmetric.</p>';
+    var input = box.querySelector('input'), kv = box.querySelector('[data-kv]'), note = box.querySelector('[data-note]'), tm = box.querySelector('.tm');
+    function update() {
+      var k = +input.value, p = 1 / (1 + Math.exp(-k)), q = 1 - p;
+      tm.querySelectorAll('[data-c="a"]').forEach(function (c) { c.style.setProperty('--a', 0.06 + 0.5 * p); c.firstChild.textContent = p.toFixed(3); });
+      tm.querySelectorAll('[data-c="b"]').forEach(function (c) { c.style.setProperty('--a', 0.06 + 0.5 * q); c.firstChild.textContent = q.toFixed(3); });
+      var dur = 1 / q, gap = 1 - Math.abs(2 * p - 1);
+      kv.textContent = k.toFixed(1);
+      input.setAttribute('aria-valuetext', k.toFixed(1));
+      note.innerHTML = 'Stay probability <b>' + p.toFixed(3) + '</b>, so a regime lasts about <b>' + (dur < 10 ? dur.toFixed(1) : Math.round(dur)) + '</b> quarters and the spectral gap is <b>' + gap.toFixed(3) + '</b>.';
+      tm.setAttribute('aria-label', 'Transition matrix with kappa ' + k.toFixed(1) + ': stay probability ' + p.toFixed(3) + ', switch probability ' + q.toFixed(3) + '.');
+      fill(input);
+    }
+    input.addEventListener('input', update); update();
+  };
+
+  /* ---------- cards: pick a symbol, read what it does ---------- */
+  var grids = document.querySelectorAll('#shred .math-grid');
+  var io = null;
+  if ('IntersectionObserver' in window && !reduced()) {
+    grids.forEach(function (g) { g.classList.add('rv'); });
+    io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (en) { if (en.isIntersecting) { en.target.classList.add('in'); io.unobserve(en.target); } });
+    }, { rootMargin: '0px 0px -8% 0px', threshold: 0.08 });
+  }
+
+  cards.forEach(function (card, n) {
+    card.style.setProperty('--n', n % 2);
+    var say = card.querySelector('.math-say'), sr = card.querySelector('[data-sr]'), lines = card.querySelector('.mathlines');
+    var chips = {}; card.querySelectorAll('.mchip').forEach(function (c) { chips[c.getAttribute('data-t')] = c; });
+    card.querySelectorAll('.mathline [data-t]').forEach(function (el, i) { el.style.setProperty('--i', i); });
+    var current = null, via = null;
+
+    function select(key, how) {
+      current = key; via = key ? how : null;
+      card.querySelectorAll('.mathline [data-t]').forEach(function (el) { el.classList.toggle('on', !!key && el.getAttribute('data-t') === key); });
+      Object.keys(chips).forEach(function (k) { chips[k].setAttribute('aria-pressed', k === key ? 'true' : 'false'); });
+      var want = key || 'whole', shown = null;
+      say.querySelectorAll('.v').forEach(function (v) { var on = v.getAttribute('data-v') === want; v.classList.toggle('on', on); if (on) shown = v; });
+      say.setAttribute('data-k', shown && shown.getAttribute('data-k') ? shown.getAttribute('data-k') : '');
+      if (sr && shown) sr.textContent = shown.textContent.replace(/\s+/g, ' ').trim();
+      card.classList.add('touched');
+      card.dispatchEvent(new CustomEvent('mathtermchange', { detail: { key: key } }));
+    }
+    function reveal() {
+      var r = say.getBoundingClientRect();
+      if (r.bottom > window.innerHeight - 12) window.scrollBy({ top: r.bottom - window.innerHeight + 24, behavior: reduced() ? 'auto' : 'smooth' });
+    }
+
+    /* a finger is wider than a KaTeX symbol, so find the closest symbol to the touch point rather than demanding a direct hit */
+    function nearest(x, y, slop) {
+      var best = null, bd = 1e9, ba = 1e9;
+      lines.querySelectorAll('[data-t]').forEach(function (el) {
+        var r = el.getBoundingClientRect(); if (!r.width || !r.height) return;
+        var dx = Math.max(r.left - x, 0, x - r.right), dy = Math.max(r.top - y, 0, y - r.bottom);
+        var d = Math.sqrt(dx * dx + dy * dy), a = r.width * r.height;
+        if (d < bd - 0.5 || (Math.abs(d - bd) <= 0.5 && a < ba)) { best = el; bd = d; ba = a; }
+      });
+      return bd <= slop ? best : null;
+    }
+    lines.addEventListener('click', function (e) {
+      var el = nearest(e.clientX, e.clientY, coarse ? 32 : 14);
+      if (!el) return;
+      var key = el.getAttribute('data-t');
+      select(key === current && via === 'tap' ? null : key, 'tap');
+      // Keep the reader's position; the explanation stays below its controls.
     });
-    /* KaTeX fraction denominators swallow pointer hits, so treat anything below the fraction line as the denominator term */
-    card.querySelectorAll('.mathline[data-denom]').forEach(function (ml) {
-      var key = ml.getAttribute('data-denom'), last = '';
-      var below = function (e) {
-        var line = ml.querySelector('.frac-line');
-        if (!line || e.target.closest('[data-t]')) return false;
-        var r = line.getBoundingClientRect();
-        var m = ml.querySelector('.mfrac').getBoundingClientRect();
-        return e.clientY > r.bottom && e.clientX >= m.left && e.clientX <= m.right;
-      };
-      ml.addEventListener('click', function (e) { if (below(e)) show(key); });
-      ml.addEventListener('mousemove', function (e) { if (below(e) && last !== key) { last = key; show(key); } else if (!below(e)) last = ''; });
+    lines.addEventListener('pointermove', function (e) {
+      if (e.pointerType !== 'mouse') return;
+      var el = nearest(e.clientX, e.clientY, 6);
+      if (el && el.getAttribute('data-t') !== current) select(el.getAttribute('data-t'), 'hover');
     });
-    card.querySelectorAll('.mchip').forEach(function (c) {
-      c.addEventListener('click', function () { show(c.getAttribute('data-t')); });
-      c.addEventListener('focus', function () { show(c.getAttribute('data-t')); });
+    Object.keys(chips).forEach(function (k) {
+      chips[k].addEventListener('pointerenter', function (e) { if (e.pointerType === 'mouse') select(k, 'hover'); });
+      chips[k].addEventListener('focus', function () { select(k, 'focus'); });
+      chips[k].addEventListener('click', function () { select(k === current && via === 'tap' ? null : k, 'tap'); });
     });
+
+    var viz = card.querySelector('.try[data-viz]');
+    if (viz && VIZ[viz.getAttribute('data-viz')]) { VIZ[viz.getAttribute('data-viz')](viz); viz.hidden = false; }
+    if (io) io.observe(card); else card.classList.add('in');
   });
 })();
