@@ -237,3 +237,10 @@ html.darkroom .field input,html.darkroom .field textarea,html.darkroom .field se
   .skill::before { width: 36px; height: 36px; font-size: 19px; }
   .used b { display: block; margin: 0 0 4px; }
 }
+
+/* real logos where available; monogram tile otherwise */
+.skill.has-ico::before { display: none; }
+.skill .ico { position: relative; flex: none; width: 40px; height: 40px; border-radius: 11px; display: grid; place-items: center; background: color-mix(in srgb, var(--c) 17%, var(--surface)); border: 1px solid color-mix(in srgb, var(--c) 38%, var(--line)); transition: transform .3s var(--ease-spring), background .25s; }
+.skill .ico::before { content: ""; width: 22px; height: 22px; background: color-mix(in srgb, var(--c) 82%, var(--text)); -webkit-mask: var(--icon) center / contain no-repeat; mask: var(--icon) center / contain no-repeat; }
+.skill:hover .ico, .skill:focus-visible .ico, .skill.on .ico { transform: rotate(-6deg) scale(1.08); background: color-mix(in srgb, var(--c) 28%, var(--surface)); }
+@media (max-width: 600px) { .skill .ico { width: 36px; height: 36px; } .skill .ico::before { width: 20px; height: 20px; } }
