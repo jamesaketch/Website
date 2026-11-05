@@ -57,27 +57,4 @@ if(box){
   new MutationObserver(()=>{colours=palette();build();}).observe(root,{attributes:true,attributeFilter:['data-theme','data-contrast','class']});matchMedia('(prefers-color-scheme: dark)').addEventListener('change',()=>{colours=palette();build();});
  }else{twoD();buttons[1].disabled=true;buttons[1].title='3D graphics are unavailable on this device';}
 }
-const original=document.querySelector('.amc .orbit');
-if(original){
- const holder=document.createElement('div');holder.className='orbital';holder.innerHTML='<div class="scene"><canvas tabindex="0" role="img" aria-label="Angular Momentum Capital orbital graphic. Drag or use the arrow keys to rotate. Home resets the view."></canvas></div><div class="orbit-stages" role="group" aria-label="Explore Angular Momentum Capital"><button type="button" class="chip" aria-pressed="true">Research</button><button type="button" class="chip" aria-pressed="false">Signals</button><button type="button" class="chip" aria-pressed="false">Risk</button></div><p class="orbit-description" aria-live="polite"></p><p class="scene-caption">Drag to rotate · arrow keys to explore</p>';
- original.after(holder);const renderer=scene(holder.querySelector('canvas'),{scale:.74,pitch:.35,yaw:.3,onLoss:()=>{holder.hidden=true;original.style.display='';}});
- if(!renderer){holder.remove();return;}original.style.display='none';let selected=0,colours=palette(),phase=0,frame=0,last=0;
- const descriptions=['Start with a question. Explore the evidence behind an investment idea.','Translate an idea into an explicit, testable trading rule.','Examine exposure, uncertainty and the ways a strategy can fail.'];
- const buttons=holder.querySelectorAll('.orbit-stages button'),description=holder.querySelector('.orbit-description');description.textContent=descriptions[0];
- function ring(t,k,r=1){const x=Math.cos(t)*r,y=Math.sin(t)*r;const a=k*Math.PI/3+.25;return[x,Math.cos(a)*y,Math.sin(a)*y];}
- let particles=[];
- function build(){renderer.clear();particles=[];
-  for(let k=0;k<3;k++){
-   const data=[],c=colours.accent,a=k*Math.PI/3+.25,N=100,S=8,radius=k===selected?.024:.012;
-   function tube(t,q){const radial=ring(t,k),normal=[0,-Math.sin(a),Math.cos(a)],n=radial.map((v,i)=>v*Math.cos(q)+normal[i]*Math.sin(q));const position=radial.map((v,i)=>v+n[i]*radius);const light=Math.max(0,n[0]*.35+n[1]*.75+n[2]*.55);const shade=c.map(v=>Math.min(1,v*(.48+.6*light)+.27*Math.pow(light,8)));return vertex(...position,shade);}
-   for(let i=0;i<N;i++)for(let j=0;j<S;j++){let t=i/N*Math.PI*2,u=(i+1)/N*Math.PI*2,q=j/S*Math.PI*2,r=(j+1)/S*Math.PI*2;data.push(...tube(t,q),...tube(u,q),...tube(t,r),...tube(u,q),...tube(u,r),...tube(t,r));}
-   renderer.add(data,'TRIANGLES');particles.push(renderer.add(vertex(...ring(phase*(1-k*.19)+k*2.1,k),colours.accent),'POINTS'));
-  }
-  const core=[];for(let a=0;a<3;a++)for(let i=0;i<=60;i++)core.push(...vertex(...ring(i/60*Math.PI*2,a,.14),colours.accent));renderer.add(core,'LINE_STRIP');renderer.draw();
- }
- buttons.forEach((b,i)=>{const select=()=>{selected=i;buttons.forEach((x,j)=>x.setAttribute('aria-pressed',String(i===j)));description.textContent=descriptions[i];build();};b.addEventListener('click',select);b.addEventListener('pointerenter',e=>{if(e.pointerType==='mouse')select();});b.addEventListener('focus',select);});
- function animate(t){frame=requestAnimationFrame(animate);if(still()||document.hidden||!renderer.visible){last=t;return;}if(t-last<32)return;phase+=(t-last)*.0002;last=t;particles.forEach((mesh,k)=>renderer.update(mesh,vertex(...ring(phase*(1-k*.19)+k*2.1,k),colours.accent)));renderer.draw();}build();frame=requestAnimationFrame(animate);
- window.addEventListener('pagehide',()=>cancelAnimationFrame(frame));window.addEventListener('pageshow',e=>{if(e.persisted){last=performance.now();frame=requestAnimationFrame(animate);}});
- new MutationObserver(()=>{colours=palette();build();}).observe(root,{attributes:true,attributeFilter:['data-theme','data-contrast']});matchMedia('(prefers-color-scheme: dark)').addEventListener('change',()=>{colours=palette();build();});
-}
 })();

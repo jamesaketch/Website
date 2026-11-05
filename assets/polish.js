@@ -70,3 +70,18 @@
   tryBox.querySelectorAll('.rng').forEach(label=>{const input=label.querySelector('input');const relevant=key==='nu'&&tryBox.dataset.viz==='tdist'||key===input?.dataset.s||key==='kappa'&&tryBox.dataset.viz==='trans';label.classList.toggle('is-linked',!!relevant);});
  }));
 })();
+
+/* progressive blur under the sticky bar: a fixed sibling (the bar is its own backdrop root) */
+(function () {
+  var bar = document.querySelector('.bar');
+  if (!bar || document.querySelector('.pblur')) return;
+  var d = document.createElement('div'); d.className = 'pblur'; d.setAttribute('aria-hidden', 'true');
+  for (var i = 0; i < 5; i++) d.appendChild(document.createElement('i'));
+  bar.after(d);
+  var root = document.documentElement;
+  function size() { root.style.setProperty('--barh', bar.getBoundingClientRect().height + 'px'); }
+  if ('ResizeObserver' in window) new ResizeObserver(size).observe(bar); size();
+  var on = false;
+  function check() { var s = window.scrollY > 12; if (s !== on) { on = s; root.classList.toggle('scrolled', s); } }
+  window.addEventListener('scroll', check, { passive: true }); check();
+})();
