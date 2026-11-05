@@ -493,10 +493,11 @@
       var m = name.length <= 2 ? name : name.replace(/[^A-Za-z]/g, '').slice(0, 2);
       var marks = { 'PyTorch': 'Pt', 'MATLAB': 'Mt', 'LaTeX': 'Tx', 'Bayesian econometrics': 'Be', 'MCMC and NUTS': 'Mc', 'Markov-switching models': 'Ms', 'Hamilton filter': 'Hf', 'Time series': 'Ts', 'Bloomberg Terminal': 'Bb', 'Excel': 'Xl', 'Lightroom': 'Lr', 'Photoshop': 'Ps', 'Irish': 'Ga' };
       b.setAttribute('data-m', marks[name] || (m.charAt(0).toUpperCase() + m.slice(1, 2).toLowerCase()));
-      var icons = { 'Python': 'python', 'PyTorch': 'pytorch', 'R': 'r', 'LaTeX': 'latex', 'Git': 'git', 'MATLAB': 'matlab', 'Photoshop': 'photoshop', 'Premiere': 'premiere' };
+      var icons = { 'Python': 'python', 'PyTorch': 'pytorch', 'R': 'r', 'LaTeX': 'latex', 'Git': 'git', 'MATLAB': 'matlab', 'Photoshop': 'photoshop', 'Premiere': 'premiere', 'JAX': 'jax', 'NumPyro': 'numpyro', 'Bloomberg Terminal': 'bloomberg', 'Lightroom': 'lightroom' };
+      var apps = { 'Photoshop': 1, 'Premiere': 1, 'Bloomberg Terminal': 1, 'Lightroom': 1 };
       if (icons[name]) {
         var ico = document.createElement('i');
-        ico.className = 'ico';
+        ico.className = apps[name] ? 'ico app' : 'ico';
         ico.setAttribute('aria-hidden', 'true');
         ico.style.setProperty('--icon', 'url(/assets/icons/' + icons[name] + '.svg)');
         b.insertBefore(ico, b.firstChild);
