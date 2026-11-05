@@ -193,3 +193,47 @@ html.darkroom .field input,html.darkroom .field textarea,html.darkroom .field se
 .rng { padding:6px;border-radius:10px;margin-inline:-6px;transition:background .2s; }
 .rng.is-linked { background:color-mix(in srgb,var(--tc,var(--accent)) 12%,transparent); }
 .try[data-active-term=nu] .scene { border-color:var(--c-tails); }
+
+/* ===== skills: card grid, category tones, spotlight, detail panel ===== */
+#skills { --c-code: #8a4b22; --c-methods: #8a6a1f; --c-finance: #5d6b2c; --c-creative: #a3452e; --c-lang: #3f6b62; }
+.filters { gap: 10px; margin-bottom: 30px; }
+.filters .chip { gap: 8px; padding: 6px 16px; }
+.filters .chip .n { font-size: 11px; font-weight: 600; opacity: .6; font-variant-numeric: tabular-nums; }
+.filters .chip[aria-pressed="true"] .n { opacity: .85; }
+.skills { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 210px), 1fr)); gap: 12px; }
+.skills li { --c: var(--accent); --mx: 50%; --my: 50%; }
+.skills li[data-g="code"] { --c: var(--c-code); }
+.skills li[data-g="methods"] { --c: var(--c-methods); }
+.skills li[data-g="finance"] { --c: var(--c-finance); }
+.skills li[data-g="creative"] { --c: var(--c-creative); }
+.skills li[data-g="lang"] { --c: var(--c-lang); }
+.skill { position: relative; overflow: hidden; width: 100%; height: 100%; min-height: 68px; display: flex; align-items: center; gap: 14px; text-align: left; padding: 12px 14px; border-radius: 14px; line-height: 1.25;
+  background: linear-gradient(135deg, color-mix(in srgb, var(--c) 9%, var(--surface)), var(--surface));
+  box-shadow: 0 1px 0 color-mix(in srgb, #fff 18%, transparent) inset, 0 6px 16px -12px color-mix(in srgb, var(--c) 70%, transparent);
+  transition: transform .25s var(--ease-spring), border-color .25s, box-shadow .25s; }
+.skill::before { content: attr(data-m); flex: none; width: 40px; height: 40px; border-radius: 11px; display: grid; place-items: center; font-family: var(--serif); font-size: 21px; letter-spacing: .01em; line-height: 1;
+  color: color-mix(in srgb, var(--c) 78%, var(--text)); background: color-mix(in srgb, var(--c) 17%, var(--surface)); border: 1px solid color-mix(in srgb, var(--c) 38%, var(--line)); transition: transform .3s var(--ease-spring), background .25s; }
+.skill::after { content: ""; position: absolute; inset: 0; pointer-events: none; opacity: 0; transition: opacity .25s;
+  background: radial-gradient(180px circle at var(--mx) var(--my), color-mix(in srgb, var(--c) 22%, transparent), transparent 70%); }
+.skill:hover, .skill:focus-visible, .skill.on { border-color: color-mix(in srgb, var(--c) 70%, var(--line)); transform: translateY(-3px);
+  box-shadow: 0 1px 0 color-mix(in srgb, #fff 22%, transparent) inset, 0 14px 26px -14px color-mix(in srgb, var(--c) 85%, transparent); }
+.skill:hover::after, .skill:focus-visible::after { opacity: 1; }
+.skill:hover::before, .skill:focus-visible::before, .skill.on::before { transform: rotate(-6deg) scale(1.08); background: color-mix(in srgb, var(--c) 28%, var(--surface)); }
+.skill .g { display: block; margin-top: 3px; font-size: 10.5px; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; color: color-mix(in srgb, var(--c) 70%, var(--muted)); }
+.skill > .g { position: relative; }
+.used { position: relative; min-height: 3.4em; margin-top: 26px; padding: 16px 20px 16px 22px; border-radius: 14px; display: block; color: var(--muted);
+  background: color-mix(in srgb, var(--surface) 70%, transparent); border: 1px solid var(--line); border-left: 3px solid var(--accent); transition: border-color .25s; }
+.used b { font-family: var(--serif); font-weight: 400; font-size: 22px; color: var(--text); margin-right: .4em; }
+@media (prefers-reduced-motion: no-preference) {
+  .skills li { opacity: 0; transform: translateY(14px) scale(.98); }
+  .skills.in li { animation: skillIn .55s var(--ease-out) forwards; animation-delay: calc(var(--i, 0) * 34ms); }
+  @keyframes skillIn { to { opacity: 1; transform: none; } }
+}
+@media (hover: none) { .skill::after { display: none; } }
+
+@media (max-width: 600px) {
+  .skills { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+  .skill { flex-direction: column; align-items: flex-start; gap: 10px; padding: 12px; min-height: 96px; }
+  .skill::before { width: 36px; height: 36px; font-size: 19px; }
+  .used b { display: block; margin: 0 0 4px; }
+}

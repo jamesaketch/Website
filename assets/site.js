@@ -487,9 +487,36 @@
         used.innerHTML = '&nbsp;';
       });
     });
+    /* presentation: monogram tiles, counts, spotlight, staggered entrance */
+    skills.querySelectorAll('.skill').forEach(function (b) {
+      var name = b.firstChild.textContent.trim();
+      var m = name.length <= 2 ? name : name.replace(/[^A-Za-z]/g, '').slice(0, 2);
+      var marks = { 'PyTorch': 'Pt', 'MATLAB': 'Mt', 'LaTeX': 'Tx', 'Bayesian econometrics': 'Be', 'MCMC and NUTS': 'Mc', 'Markov-switching models': 'Ms', 'Hamilton filter': 'Hf', 'Time series': 'Ts', 'Bloomberg Terminal': 'Bb', 'Excel': 'Xl', 'Lightroom': 'Lr', 'Photoshop': 'Ps', 'Irish': 'Ga' };
+      b.setAttribute('data-m', marks[name] || (m.charAt(0).toUpperCase() + m.slice(1, 2).toLowerCase()));
+      var wrap = document.createElement('span');
+      wrap.className = 'sk-text';
+      while (b.firstChild) wrap.appendChild(b.firstChild);
+      b.appendChild(wrap);
+      b.addEventListener('pointermove', function (e) {
+        var r = b.getBoundingClientRect(), li = b.parentNode;
+        li.style.setProperty('--mx', (e.clientX - r.left) + 'px');
+        li.style.setProperty('--my', (e.clientY - r.top) + 'px');
+      });
+    });
+    var all = skills.querySelectorAll('li');
+    all.forEach(function (li, i) { li.style.setProperty('--i', i); });
+    filters.forEach(function (f) {
+      var g = f.getAttribute('data-f');
+      var n = g === 'all' ? all.length : skills.querySelectorAll('li[data-g="' + g + '"]').length;
+      var c = document.createElement('span'); c.className = 'n'; c.textContent = n; f.appendChild(c);
+    });
+    if ('IntersectionObserver' in window) {
+      var io = new IntersectionObserver(function (es) { es.forEach(function (e) { if (e.isIntersecting) { skills.classList.add('in'); io.disconnect(); } }); }, { threshold: .15 });
+      io.observe(skills);
+    } else { skills.classList.add('in'); }
     var say = function (btn) {
       skills.querySelectorAll('.skill').forEach(function (b) { b.classList.toggle('on', b === btn); });
-      used.innerHTML = '<b>' + btn.firstChild.textContent + '</b>: ' + btn.getAttribute('data-used');
+      used.innerHTML = '<b>' + btn.querySelector('.sk-text').firstChild.textContent + '</b>: ' + btn.getAttribute('data-used');
     };
     skills.querySelectorAll('.skill').forEach(function (b) {
       b.addEventListener('mouseenter', function () { say(b); });
