@@ -1,0 +1,77 @@
+/* CV-specific layout. Loaded last so decorative site styles cannot leak into print. */
+@media screen {
+  .cv-page { background-image: none; }
+  .cv-page::before { display: none; }
+  .cv-page .page-head { padding: clamp(40px, 6vw, 76px) 0 32px; }
+  .cv-page .page-head h1 { font-size: clamp(42px, 6vw, 72px); line-height: 1.06; letter-spacing: -.025em; }
+  .cv-page .page-head p { max-width: 48em; font-size: 17px; line-height: 1.65; }
+  .cv-page .cv-tools { margin-top: 22px; }
+  .cv-page .page-body { padding: 0 0 64px; }
+  .cv-page .cv { padding: clamp(24px, 4vw, 48px); background: var(--surface); border: 1px solid var(--line); border-radius: 16px; grid-template-columns: minmax(0, 1fr) minmax(230px, .48fr); gap: 40px; }
+  .cv-page .cv h2 { font-size: 28px; line-height: 1.2; margin-bottom: 14px; }
+  .cv-page .cv-block { margin-bottom: 32px; }
+  .cv-page .cv-block:last-child { margin-bottom: 0; }
+  .cv-page .ent { padding: 14px 0; }
+  .cv-page .ent:last-child { border-bottom: 0; }
+  .cv-page .ent-h { flex-wrap: wrap; gap: 4px 16px; }
+  .cv-page .ent-h strong { flex: 1 1 220px; }
+  .cv-page .ent-h time { font-size: 13px; }
+  .cv-page aside { border-left: 1px solid var(--line); padding-left: 28px; }
+  .cv-page aside .ent-h { display: block; }
+  .cv-page aside .ent-h time { display: block; margin-top: 4px; }
+  .cv-page .contacts a { overflow-wrap: anywhere; }
+  .cv-page .pblur { display: none; }
+}
+@media screen and (max-width: 850px) {
+  .cv-page .cv { grid-template-columns: 1fr; gap: 32px; }
+  .cv-page aside { border-left: 0; border-top: 1px solid var(--line); padding: 28px 0 0; }
+}
+@media screen and (max-width: 480px) {
+  .cv-page .cv { padding: 22px 18px; border-radius: 12px; }
+  .cv-page .ent-h { display: block; }
+  .cv-page .ent-h time { display: block; margin-top: 4px; white-space: normal; }
+}
+
+@media print {
+  @page { size: A4; margin: 13mm 14mm; }
+  :root {
+    color-scheme: light only !important;
+    --bg: #fff !important; --surface: #fff !important; --surface-2: #fff !important;
+    --text: #171717 !important; --muted: #383838 !important;
+    --accent: #333 !important; --accent-ink: #fff !important; --line: #ccc !important;
+  }
+  html, body.cv-page { background: #fff !important; color: #171717 !important; height: auto !important; min-height: 0 !important; padding: 0 !important; margin: 0 !important; color-scheme: light only !important; }
+  body.cv-page { font-size: 9.5pt; line-height: 1.4; zoom: 1 !important; }
+  .cv-page *, .cv-page *::before, .cv-page *::after {
+    animation: none !important; transition: none !important;
+    box-shadow: none !important; text-shadow: none !important;
+    filter: none !important; backdrop-filter: none !important; -webkit-backdrop-filter: none !important;
+  }
+  .cv-page::before, .cv-page::after, .cv-page .bar, .cv-page footer, .cv-page .skip,
+  .cv-page .cv-tools, .cv-page .a11y-panel, .cv-page .cmenu, .cv-page dialog,
+  .cv-page .pblur, .cv-page .to-top, .cv-page .toast { display: none !important; }
+  .cv-page main, .cv-page .page-head, .cv-page .page-body, .cv-page .wrap,
+  .cv-page .cv, .cv-page .cv-block, .cv-page .ent, .cv-page aside {
+    background: transparent !important; color: #171717 !important; border-radius: 0;
+    opacity: 1 !important; transform: none !important;
+  }
+  .cv-page .wrap { width: 100%; max-width: none; margin: 0; }
+  .cv-page .page-head { padding: 0 0 5mm; margin-bottom: 5mm; border-bottom: 1pt solid #999; }
+  .cv-page .page-head h1 { margin: 0; font-size: 29pt; line-height: 1.08; letter-spacing: -.02em; }
+  .cv-page .page-head p { max-width: 155mm; margin: 6pt 0 0; font-size: 10pt; line-height: 1.4; }
+  .cv-page .page-body { padding: 0; }
+  .cv-page .cv { display: grid; grid-template-columns: minmax(0, 1fr) 63mm; gap: 7mm; padding: 0; border: 0; align-items: start; }
+  .cv-page aside { padding: 0; border: 0; }
+  .cv-page .cv h2 { font-size: 15pt; line-height: 1.15; margin: 0 0 5pt; break-after: avoid; }
+  .cv-page .cv-block { margin: 0 0 12pt; }
+  .cv-page .ent { padding: 6pt 0; border-top: .5pt solid #ccc; break-inside: avoid; page-break-inside: avoid; }
+  .cv-page .ent:last-child { border-bottom: 0; }
+  .cv-page .ent-h { display: block; }
+  .cv-page .ent-h strong { font-size: 9.5pt; line-height: 1.3; }
+  .cv-page .ent-h time { display: block; margin-top: 2pt; font-size: 8.5pt; white-space: normal; color: #444; }
+  .cv-page .ent .org { font-size: 9pt; margin-top: 2pt; color: #333; }
+  .cv-page .ent p, .cv-page .cv aside .ent p { font-size: 9.3pt; line-height: 1.4; margin: 3pt 0 0; color: #333; orphans: 3; widows: 3; }
+  .cv-page aside .ent { padding: 5pt 0; }
+  .cv-page .contacts { font-size: 9pt; gap: 4pt; }
+  .cv-page a { color: #171717 !important; background: none !important; text-decoration: none !important; overflow-wrap: anywhere; }
+}
